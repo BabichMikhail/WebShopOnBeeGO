@@ -1,0 +1,17 @@
+{
+    "name": "MyWebShopOnBeeGO",
+    "author": "Babich Mikhail DVFU 2016",
+    "dependencies": {
+        "jqgrid": ">=3.7.x",
+        "jquery": ">=1.7.0",
+        "jquery-ui": ">=1.7.0"
+    },
+    "overrides": {
+        "jquery-ui": {
+            "main": [
+                "jquery-ui.js",
+                "themes/ui-lightness/jquery-ui.css"
+            ]
+        }
+    }
+}

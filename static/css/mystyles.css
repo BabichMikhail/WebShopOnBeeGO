@@ -1,0 +1,61 @@
+.ui-jqgrid tr.jqgrow td {
+    height: auto;
+}
+
+.globalTable {
+    width: 100%;
+}
+
+.header {
+    align-text: center;
+    background: #f6a828 ;
+    font-size: 0.8em;
+}
+
+.logForm {
+    align-text: center;
+    font-size: 0.8em;
+}
+
+a {
+    text-decoration: none;
+}
+
+.catalog {
+    text-align: left;
+    vertical-align: top;
+}
+
+.grid {
+    text-align: left;
+    vertical-align: top;
+}
+
+.headerBoxCenter {
+    display: inline-block;
+    margin: 5px;
+}
+
+.headerBoxRight {
+    display: inline-block;
+    float: right;
+    margin: 5px;
+}
+
+.err_msg {
+
+}
+
+.form-div {
+    width: 400px;
+}
+
+.form-label {
+    display: block;
+}
+
+.ulRight {
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+}
