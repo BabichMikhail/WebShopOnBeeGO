@@ -28,7 +28,7 @@
         <tr>
             <td class="catalog" id="catalog">
             </td>
-            <td>
+            <td class="auth">
                 <div class="ui-dialog-content ui-widget-content form-div logForm">
                     <form class="ui-form ui-widget" method="POST" action='{{urlfor "LoginController.Signup"}}'>
                         <div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix ui-draggable-handle">

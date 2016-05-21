@@ -17,6 +17,10 @@
     font-size: 0.8em;
 }
 
+.auth {
+    vertical-align: top;
+}
+
 a {
     text-decoration: none;
 }

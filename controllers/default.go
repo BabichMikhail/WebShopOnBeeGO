@@ -59,6 +59,7 @@ type LoginController struct {
 
 func (c *LoginController) Signup() {
     c.TplName = "signup.tpl"
+    c.SetCatalog()
     if !c.Ctx.Input.IsPost() {
         return
     }
@@ -91,6 +92,7 @@ func (c *LoginController) Signup() {
 
 func (c *LoginController) Login() {
     c.TplName = "login.tpl"
+    c.SetCatalog()
     if !c.Ctx.Input.IsPost() {
         return
     }
