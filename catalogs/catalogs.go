@@ -17,9 +17,11 @@ func CreateCatalog(cat []Catalog, s string, cat_id int) string {
     var name, name_i18n string
     for _, value := range cat {
         if value.Cid == cat_id {
-            count++
             name = value.Name
             name_i18n = value.Name_i18n
+        }
+        if value.Cid == cat_id && value.Descendant != 0 {
+            count++
         }
     }
     s += "/" + name
