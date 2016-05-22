@@ -25,7 +25,7 @@ func CreateCatalog(cat []Catalog, s string, cat_id int) string {
     s += "/" + name
     ans := fmt.Sprintf(`<li><a href="%s">%s</a>`, s, name_i18n)
     if count > 0 {
-        ans += `<ul>`
+        ans += `<ul class="subCat">`
     }
     for _, value := range cat {
         if value.Cid == cat_id && value.Descendant != 0 {
@@ -41,7 +41,7 @@ func CreateCatalog(cat []Catalog, s string, cat_id int) string {
 func GetCatalog(cat []Catalog) string {
     if Ready_cat == `` {
         used_cid := map[int]bool{}
-        Ready_cat += `<div><ul><li><a href="/webshop/catalog">Каталог</a></li>`
+        Ready_cat += `<div><ul class="mainCat"><li><a href="/webshop/catalog">Каталог</a></li>`
         for _, value := range cat {
             if value.Ancestor == 0 && used_cid[value.Cid] == false {
                 used_cid[value.Cid] = true

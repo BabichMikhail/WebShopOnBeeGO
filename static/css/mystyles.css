@@ -7,13 +7,11 @@
 }
 
 .header {
-    align-text: center;
-    background: #f6a828 ;
+    background: #F6A828;
     font-size: 0.8em;
 }
 
 .logForm {
-    align-text: center;
     font-size: 0.8em;
 }
 
@@ -28,6 +26,7 @@ a {
 .catalog {
     text-align: left;
     vertical-align: top;
+    width: 350px;
 }
 
 .grid {
@@ -58,8 +57,60 @@ a {
     display: block;
 }
 
-.ulRight {
-    display: inline-block;
+.mainCat {
+    margin: 0;
+    padding: 0;
+    width: 122px;
+    border: solid 1px #537DBC;
+    display: block;
+}
+
+.mainCat li {
+    background-color: #F6A828;
+    width: auto;
+    border: solid 1px #537DBC;
+    z-index: 200;
+}
+
+.mainCat li > ul {
+    display: block;
+    position: absolute;
+    left: 120px;
+    top: -10px;
+}
+
+ul.mainCat li ul {
+    margin: 0;
+    padding: 0;
+    display: none;
+    border: solid 1px #537DBC;
+    width: 220px;
+}
+
+ul.mainCat li {
+    list-style: none;
+    display: block;
     position: relative;
-    cursor: pointer;
+}
+
+ul.mainCat li a {
+    background-color: #F6A828;
+    color: #FFFFFF;
+    padding: 10px;
+    display: block;
+}
+
+ul.mainCat li:hover > a {
+    background-color: #B77F1D;
+}
+
+ul.mainCat li:hover > ul {
+    display: block;
+    position: absolute;
+    left: 120px;
+    top: -10px;
+}
+
+ul.subCat li:hover > ul {
+    left: 218px;
 }
