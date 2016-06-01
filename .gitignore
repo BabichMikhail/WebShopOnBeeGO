@@ -2,3 +2,6 @@
 *.exe~
 *.db
 /static/lib/*
+/static/img/big/*
+/static/img/small/*
+*.pprof
