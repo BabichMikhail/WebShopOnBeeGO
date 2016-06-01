@@ -1,15 +1,38 @@
 # script for insert data into database
-# todo download images
 use strict;
 use warnings;
 
 use DBD::SQLite;
 use HTTP::Tiny;
 use JSON;
+use Cwd;
+use File::Spec;
 
 use Data::Dumper;
 
-my $dbh = DBI->connect("dbi:SQLite:orm_test.db","","");
+my $wd = Cwd::cwd();
+my $big_image_dir = File::Spec->catfile('static', 'img', 'big');
+my $small_image_dir = File::Spec->catfile('static', 'img', 'small');
+chdir(File::Spec->catfile($wd, 'database'));
+my $dbh = DBI->connect("dbi:SQLite:dbSqlite3Shop.db","","");
+chdir($wd);
+
+sub LoadImage {
+    my ($img_dir, $url) = @_;
+    my ($img_name) = $url =~ /([^\/]*$)/;
+    #print $img_name . "\n";
+    my $fname = File::Spec->catfile($img_dir, $img_name);
+    if (-e $fname) {
+        $fname =~ s/\\/\//g;
+        return "/$fname";
+    }
+    my $response =  HTTP::Tiny->new->get($url);
+    open my $fh, ">", $fname or die "Can't load image $url and save to $fname";
+    binmode $fh;
+    print $fh $response->{content};
+    $fname =~ s/\\/\//g;
+    "/$fname";
+}
 
 sub Tanks {
     my $response =  HTTP::Tiny->new->get('https://api.worldoftanks.ru/wot/encyclopedia/vehicles/?application_id=demo');
@@ -18,13 +41,22 @@ sub Tanks {
         defined $_->{price_gold} or defined $_->{price_credit} or next;
         $_->{price_gold} = 0 if !defined $_->{price_gold};
         $_->{price_credit} = 0 if !defined $_->{price_credit};
-        $_->{price} = 400*$_->{price_gold}  + $_->{price_credit};
-        $_->{small_icon} =$_->{images}{small_icon};
-        $_->{contour_icon} =$_->{images}{contour_icon};
-        $_->{big_icon} =$_->{images}{big_icon};
+        $_->{price} = 400*$_->{price_gold} + $_->{price_credit};
+        $_->{big_icon} = LoadImage($big_image_dir, $_->{images}{big_icon});
+        $_->{small_icon} = LoadImage($small_image_dir, $_->{images}{small_icon});
+        #$_->{small_icon} = $_->{images}{small_icon};
+        #$_->{big_icon} = $_->{images}{big_icon};
         my $is_premium = $_->{is_premium} eq "false" ? "0" : "1";
         my $is_gift = $_->{is_gift} eq "false" ? "0" : "1";
-        $dbh->do( qq ~ INSERT INTO
+        $_->{weight} = $_->{default_profile}{weight};
+        $_->{max_weight} = $_->{default_profile}{max_weight};
+        $_->{armor} = $_->{default_profile}{armor}{hull}{front} .
+            "/" . $_->{default_profile}{armor}{hull}{sides} .
+            "/" . $_->{default_profile}{armor}{hull}{rear};
+        $_->{hp} = $_->{default_profile}{hp};
+        $_->{speed_forward} = $_->{default_profile}{speed_forward};
+        $_->{speed_backward} = $_->{default_profile}{speed_backward};
+        $dbh->do(qq ~INSERT INTO
             equipments (
                 description, equip_id, equip_type, image,
                 is_gift, is_premium, level, name, nation,
@@ -35,6 +67,19 @@ sub Tanks {
                 $is_gift, $is_premium, $_->{tier}, "$_->{name}", "$_->{nation}",
                 $_->{price}, "$_->{short_name}", "$_->{small_icon}", "$_->{type}"
             )~);
+        $dbh->do(qq ~INSERT INTO
+            tanks (
+                description, equip_id,
+                is_premium, level, name, nation, price,
+                type, weight, max_weight, armor,
+                hp, speed_forward, speed_backward
+            )
+            VALUES (
+                "$_->{description}", $_->{tank_id},
+                $is_premium, $_->{tier}, "$_->{name}", "$_->{nation}", $_->{price},
+                "$_->{type}", $_->{weight}, $_->{max_weight}, "$_->{armor}",
+                $_->{hp}, $_->{speed_forward}, $_->{speed_backward}
+            )~)
     }
 }
 
@@ -49,11 +94,14 @@ sub Warplanes {
         $_->{price_gold} = 0 if !defined $_->{price_gold};
         $_->{price_credit} = 0 if !defined $_->{price_credit};
         $_->{price} = 400*$_->{price_gold}  + $_->{price_credit};
-        $_->{small_image} =$_->{images}{small};
-        $_->{medium_image} =$_->{images}{medium};
-        $_->{large_image} =$_->{images}{large};
+        $_->{large_image} = LoadImage($big_image_dir, $_->{images}{large});
+        $_->{small_image} = LoadImage($small_image_dir, $_->{images}{small});
         my $is_premium = $_->{is_premium} eq "false" ? "0" : "1";
         my $is_gift = $_->{is_gift} eq "false" ? "0" : "1";
+        my $f = $_->{features};
+        #for (keys %{$f}) {
+        #    print $_ . "\n";
+        #}
         $dbh->do(qq ~INSERT INTO
             equipments (
                 description, equip_id, equip_type, image,
@@ -64,6 +112,21 @@ sub Warplanes {
                 "$_->{description}", $_->{plane_id}, "warplanes", "$_->{large_image}",
                 $is_gift, $is_premium, $_->{level}, "$_->{name_i18n}", "$_->{nation}",
                 $_->{price}, "$_->{short_name_i18n}", "$_->{small_image}", "$_->{type}"
+            )~);
+        $dbh->do(qq ~INSERT INTO
+            warplanes (
+                description, equip_id, is_premium, level,
+                name, nation, price, type,
+                weight, hp, speed_ground, maneuverability,
+                max_speed, stall_speed, optimal_height,
+                roll_maneuver, dive_speed, opt_maneuver_speed
+            )
+            VALUES (
+                "$_->{description}", $_->{plane_id}, $is_premium, $_->{level},
+                "$_->{name_i18n}", "$_->{nation}", $_->{price}, "$_->{type}",
+                $f->{mass}, $f->{hp}, $f->{speed_at_the_ground}, $f->{maneuverability},
+                $f->{max_speed}, $f->{stall_speed}, $f->{optimal_height},
+                $f->{roll_maneuverability}, $f->{dive_speed}, $f->{optimal_maneuver_speed}
             )~);
     }
 }
@@ -202,9 +265,23 @@ sub Nations {
     }
 }
 
-Tanks;
-Warplanes;
-ClosureTable;
-Types;
-Nations;
-Levels;
+sub Admin {
+    $dbh->do(qq ~INSERT INTO
+        users (
+            login, password, rights
+        )
+        VALUES (
+            "admin", "d033e22ae348aeb5660fc2140aec35850c4da997", 0
+        )~);
+}
+
+#Tanks;
+#Warplanes;
+#ClosureTable;
+#Types;
+#Nations;
+#Levels;
+#Admin;
+#$dbh->do(qq ~DELETE FROM purchases WHERE id IN (1, 2, 3, 4, 5)~);
+$dbh->do(qq ~DELETE FROM users~);
+Admin;
