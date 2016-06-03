@@ -1,20 +1,23 @@
 package models
 
+import "time"
+
 type User struct {
-    Id            int64
-    Login         string    `orm:"size(64);unique" valid:"Required"`
-    Password      string    `orm:"size(64)"        valid:"Required;MinSize(3)"`
+    Id              int
+    Login           string    `orm:"size(64);unique" valid:"Required"`
+    Password        string    `orm:"size(64)"        valid:"Required;MinSize(3)"`
+    Rights          int
 }
 
 func (user *User) TableName() string {
-    return "user"
+    return "users"
 }
 
 type CatalogsTreePath struct {
-    Id              int     `form:"-"`
-    Ctpid           int     `form:"-"`
-    Name            string  `form:"name,text,name"`
-    Name_i18n       bool    `form:"name_i18n,text,name_i18n"`
+    Id              int
+    Ctpid           int
+    Name            string
+    Name_i18n       bool
 }
 
 func (catalogstreepath *CatalogsTreePath) TableName() string {
@@ -22,10 +25,10 @@ func (catalogstreepath *CatalogsTreePath) TableName() string {
 }
 
 type Catalogs struct {
-    Id              int     `form:"-"`
-    Cid             int     `form:"-"`
-    Ancestor        int     `form:"-"`
-    Descendant      int     `form:"-"`
+    Id              int
+    Cid             int
+    Ancestor        int
+    Descendant      int
 }
 
 func (catalogs *Catalogs) TableName() string {
@@ -33,30 +36,86 @@ func (catalogs *Catalogs) TableName() string {
 }
 
 type Equipment struct {
-    Id              int     `form:"-"`
-    Description     string  `form:"description,text,description"`
-    Equip_id        int     `form:"equip_id,int,equip_id"`
-    Equip_type      string  `form:"equip_type,text,equip_type"`
-    Image           string  `form:"image,text,image"`
-    Is_gift         bool    `form:"is_gift,bool,is_gift"`
-    Is_premium      bool    `form:"is_premium,bool,is_premium"`
-    Level           int     `form:"level,int,level"`
-    Name            string  `form:"name,text,name"`
-    Nation          string  `form:"nation,text,nation"`
-    Price           int     `form:"price,int,price"`
-    Short_name      string  `form:"short_name,text,short_name"`
-    Small_image     string  `form:"small_image,text,small_image"`
-    Type            string  `form:"type,text,type"`
+    Id              int
+    Description     string
+    Equip_id        int
+    Equip_type      string
+    Image           string
+    Is_gift         bool
+    Is_premium      bool
+    Level           int
+    Name            string
+    Nation          string
+    Price           int
+    Short_name      string
+    Small_image     string
+    Type            string
 }
 
 func (equipment *Equipment) TableName() string {
     return "equipments"
 }
 
+type TankCharacteristics struct {
+    Description     string
+    Is_premium      bool
+    Level           int
+    Name            string
+    Nation          string
+    Price           int
+    Type            string
+    Weight          int
+    Max_weight      int
+    Armor           string
+    Hp              int
+    Speed_forward   int
+    Speed_backward  int
+}
+
+type Tank struct {
+    Id              int
+    Equip_id        int
+    TankCharacteristics
+}
+
+func (tank *Tank) TableName() string {
+    return "tanks"
+}
+
+type WarplaneCharacteristics struct {
+    Description     string
+    Is_premium      bool
+    Level           int
+    Name            string
+    Nation          string
+    Price           int
+    Type            string
+    Weight          int
+    Hp              int
+    Speed_ground    int
+    Maneuverability int
+    Max_speed       int
+    Stall_speed     int
+    Optimal_height  int
+    Roll_maneuver   int
+    Dive_speed      int
+    Opt_maneuver_speed int
+}
+
+type Warplane struct {
+    Id              int
+    Equip_id        int
+    WarplaneCharacteristics
+}
+
+func (warplane *Warplane) TableName() string {
+    return "warplanes"
+}
+
 type Type struct {
-    Id              int     `form:"-"`
-    Name            string  `form:"name,text,name"`
-    Name_catalog    string  `form:"name_catalog,text,name_catalog"`
+    Id              int
+    Name            string
+    Name_catalog    string
 }
 
 func (t *Type) TableName() string {
@@ -64,9 +123,9 @@ func (t *Type) TableName() string {
 }
 
 type Level struct {
-    Id              int     `form:"-"`
-    Value           string  `form:"value,text,value"`
-    Level           int     `form:"level,int,level"`
+    Id              int
+    Value           string
+    Level           int
 }
 
 func (t *Level) TableName() string {
@@ -74,11 +133,53 @@ func (t *Level) TableName() string {
 }
 
 type Nation struct {
-    Id              int     `form:"-"`
-    Name            string  `form:"name,text,name"`
-    Name_i18n       string  `form:"name_i18n,text,name_i18n"`
+    Id              int
+    Name            string
+    Name_i18n       string
 }
 
 func (t *Nation) TableName() string {
     return "nations"
+}
+
+type Fields struct {
+    Id          string
+    Name        string
+    Price       string
+    Nation      string
+}
+
+type EquipInTable struct {
+    Equip_id    int
+    Small_image string
+    Name        string
+    Nation      string
+    Price       int
+}
+
+type ExtEquipInTable struct {
+    EquipInTable
+    Count       int
+}
+
+type Purchase struct {
+    Id          int
+    Sum         int
+    Count       int
+    Date        time.Time
+}
+
+func (p *Purchase) TableName() string {
+    return "purchases"
+}
+
+type Good struct {
+    Id          int
+    Cost        int
+    Count       int
+    Purchase_id int
+}
+
+func (g *Good) TableName() string {
+    return "goods"
 }

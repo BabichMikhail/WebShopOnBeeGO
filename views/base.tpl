@@ -14,13 +14,16 @@
     <table class="globalTable">
         <tr>
             <div class="ui-widget ui-widget-header header">
-                <div class="headerBoxCenter"><a href="/webshop">Магазин виртуальной техники</a></div>
+                <div class="headerBoxLeft"><a href="/webshop">Магазин виртуальной техники</a></div>
                 {{if .Authorized}}
                 <div class="headerBoxRight"><a href="/webshop/logout">Выйти</a></div>
                 <div class="headerBoxRight">{{.Username}}</div>
                 {{else}}
                 <div class="headerBoxRight"><a href="/webshop/signup">Регистрация</a></div>
                 <div class="headerBoxRight"><a href="/webshop/login">Войти</a></div>
+                {{end}}
+                {{if .IsAdmin}}
+                <div class="headerBoxRight"><a href="/webshop/admin">Admin</a></div>
                 {{end}}
             </div>
         </tr>

@@ -33,13 +33,35 @@
         <tr>
             <td class="catalog" id="catalog">
             </td>
-            <td>
-                {{.CenterPage}}
+            <td class="goods">
+                <table>
+                    <tbody>
+                        <tr>
+                            <td><img src="{{.Image}}"></img></td>
+                            <td><a href="/webshop/card/add/{{.Equip_id}}">Купить</a></td>
+                        </tr>
+                        <tr>
+                            <td>Описание</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">{{.Description}}</td>
+                        </tr>
+                        <tr>
+                            <td>Характеристики</td>
+                        </tr>
+                        {{range .Characteristics}}
+                        <tr>
+                            <td>{{.Key}}</td><td>{{.Value}}</td>
+                        </tr>
+                        {{end}}
+                    </tbody>
+                </table>
             </td>
         </tr>
     </table>
     <script type="text/javascript">
         $("#catalog").html("{{.Catalog}}");
     </script>
+
 </body>
 </html>

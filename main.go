@@ -5,12 +5,12 @@ import (
     "github.com/astaxie/beego"
     "github.com/astaxie/beego/orm"
     _ "github.com/mattn/go-sqlite3"
-    models "WebShopOnBeeGO/models"
+    "WebShopOnBeeGO/models"
 )
 
 func init() {
     orm.RegisterDriver("sqlite", orm.DRSqlite)
-    orm.RegisterDataBase("default", "sqlite3", "database/orm_test.db")
+    orm.RegisterDataBase("default", "sqlite3", "database/dbSqlite3Shop.db")
     orm.RegisterModel(new(models.Equipment))
     orm.RegisterModel(new(models.User))
     orm.RegisterModel(new(models.Catalogs))
@@ -18,7 +18,11 @@ func init() {
     orm.RegisterModel(new(models.Type))
     orm.RegisterModel(new(models.Nation))
     orm.RegisterModel(new(models.Level))
-    //orm.RunSyncdb("default", true, true)
+    orm.RegisterModel(new(models.Tank))
+    orm.RegisterModel(new(models.Warplane))
+    orm.RegisterModel(new(models.Purchase))
+    orm.RegisterModel(new(models.Good))
+    orm.RunSyncdb("default", false, false)
 }
 
 func main() {

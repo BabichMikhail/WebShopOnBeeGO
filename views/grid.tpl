@@ -15,7 +15,9 @@
     <table class="globalTable">
         <tr>
             <div class="ui-widget ui-widget-header header">
-                <div class="headerBoxCenter"><a href="/webshop">Магазин виртуальной техники</a></div>
+                <div class="headerBoxLeft"><a href="/webshop">Магазин виртуальной техники</a></div>
+                <div class="headerEmptyBlock"></div>
+                <div class="headerBoxCenter"><a href="/webshop/purchases">Товар: {{.PurchaseCount}}шт. Сумма: {{.Sum}}</a></div>
                 {{if .Authorized}}
                 <div class="headerBoxRight"><a href="/webshop/logout">Выйти</a></div>
                 <div class="headerBoxRight">{{.Username}}</div>
@@ -23,48 +25,42 @@
                 <div class="headerBoxRight"><a href="/webshop/signup">Регистрация</a></div>
                 <div class="headerBoxRight"><a href="/webshop/login">Войти</a></div>
                 {{end}}
+                {{if .IsAdmin}}
+                <div class="headerBoxRight"><a href="/webshop/admin">Admin</a></div>
+                {{end}}
             </div>
         </tr>
         <tr>
             <td class="catalog" id="catalog">
             </td>
             <td class="grid">
-                <table id="grid"></table>
-                <div id="jqGridPager"></div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Код</th>
+                            <th>Фото</th>
+                            <th>Наименование товара</th>
+                            <th>Производитель</th>
+                            <th>Цена</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{range .Equipment}}
+                        <tr>
+                            <td>{{.Equip_id}}</td>
+                            <td><img src="{{.Small_image}}"></img></td>
+                            <td><a href="/webshop/goodsinfo/{{.Equip_id}}">{{.Name}}</a></td>
+                            <td>{{.Nation}}</td>
+                            <td>{{.Price}}</td>
+                            <td><a href="/webshop/card/add/{{.Equip_id}}">Купить</a></td>
+                        </tr>
+                        {{end}}
+                    </tbody>
+                </table>
             </td>
         </tr>
     </table>
-
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $('#grid').jqGrid({
-                datatype: 'local',
-                data: [],
-                height: 650,
-                width: 700,
-                colModel: [
-                    { name: 'id', width: 120, label: {{.Fields.Id}}, align: 'center', key: true },
-                    { name: 'name', width: 250, label: {{.Fields.Name}}, align: 'center' },
-                    { name: 'price', width: 150, label: {{.Fields.Price}}, align: 'center', sorttype: 'int' },
-                    { name: 'nation', width: 130, label: {{.Fields.Nation}}, align: 'center' }
-                ],
-                pager: '#jqGridPager',
-                viewrecords: true,
-                rowNum: 50,
-                rowList: [50, 100, 200],
-                rownumbers: true,
-                caption: "Техника",
-            });
-            $('#grid').jqGrid('setGridParam', {
-                datatype: 'local',
-                data: [
-                    {{range .Equipment}}
-                    { id: {{.Equip_id}}, name: {{.Name}}, price: {{.Price}}, nation: {{.Nation}} },
-                    {{end}}
-                ],
-            }).trigger('reloadGrid');
-        });
-    </script>
     <script type="text/javascript">
         $("#catalog").html("{{.Catalog}}");
     </script>

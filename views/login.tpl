@@ -15,13 +15,18 @@
     <table class="globalTable">
         <tr>
             <div class="ui-widget ui-widget-header header">
-                <div class="headerBoxCenter"><a href="/webshop">Магазин виртуальной техники</a></div>
+                <div class="headerBoxLeft"><a href="/webshop">Магазин виртуальной техники</a></div>
+                <div class="headerEmptyBlock"></div>
+                <div class="headerBoxCenter"><a href="/webshop/purchases">Товар: {{.PurchaseCount}}шт. Сумма: {{.Sum}}</a></div>
                 {{if .Authorized}}
                 <div class="headerBoxRight"><a href="/webshop/logout">Выйти</a></div>
                 <div class="headerBoxRight">{{.Username}}</div>
                 {{else}}
                 <div class="headerBoxRight"><a href="/webshop/signup">Регистрация</a></div>
                 <div class="headerBoxRight"><a href="/webshop/login">Войти</a></div>
+                {{end}}
+                {{if .IsAdmin}}
+                <div class="headerBoxRight"><a href="/webshop/admin">Admin</a></div>
                 {{end}}
             </div>
         </tr>
@@ -42,7 +47,7 @@
                         <div>
                             <label for="Login" class="form-label">Пароль</label>
                             <input class="ui-corner-all ui-state-default" name="Password" type="password"
-                                value="" required pattern="[a-zA-Z0-9]{3,}" title="abc" />
+                                value="" required pattern="[a-zA-Z0-9]{3,}" title="[a-zA-Z0-9]{3,}" />
                         </div>
                         <div>
                             {{if .Error}}

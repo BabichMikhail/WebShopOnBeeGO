@@ -15,13 +15,18 @@
     <table class="globalTable">
         <tr>
             <div class="ui-widget ui-widget-header header">
-                <div class="headerBoxCenter"><a href="/webshop">Магазин виртуальной техники</a></div>
+                <div class="headerBoxLeft"><a href="/webshop">Магазин виртуальной техники</a></div>
+                <div class="headerEmptyBlock"></div>
+                <div class="headerBoxCenter"><a href="/webshop/purchases">Товар: {{.PurchaseCount}}шт. Сумма: {{.Sum}}</a></div>
                 {{if .Authorized}}
                 <div class="headerBoxRight"><a href="/webshop/logout">Выйти</a></div>
                 <div class="headerBoxRight">{{.Username}}</div>
                 {{else}}
                 <div class="headerBoxRight"><a href="/webshop/signup">Регистрация</a></div>
                 <div class="headerBoxRight"><a href="/webshop/login">Войти</a></div>
+                {{end}}
+                {{if .IsAdmin}}
+                <div class="headerBoxRight"><a href="/webshop/admin">Admin</a></div>
                 {{end}}
             </div>
         </tr>
@@ -50,6 +55,9 @@
                                 value="" required pattern="[a-zA-Z0-9]{3,}" title="abc" />
                         </div>
                         <div>
+                            {{if .Error}}
+                            <div class="ui-state-error ui-state-error-text">{{.Err_msg}}</div>
+                            {{end}}
                             <input type="submit" value="Создать аккаунт"/>
                         </div>
                     </form>

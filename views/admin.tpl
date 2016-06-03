@@ -33,13 +33,45 @@
         <tr>
             <td class="catalog" id="catalog">
             </td>
-            <td>
-                {{.CenterPage}}
+            <td class="grid">
+                <table id="grid"></table>
+                <div id="jqGridPager"></div>
             </td>
         </tr>
     </table>
     <script type="text/javascript">
+        $(document).ready(function () {
+            $('#grid').jqGrid({
+                datatype: 'local',
+                data: [],
+                height: 650,
+                width: 700,
+                colModel: [
+                    { name: 'id', width: 50, label: 'ID', align: 'center', key: true },
+                    { name: 'sum', width: 150, label: 'Сумма', align: 'center', sorttype: 'int' },
+                    { name: 'count', width: 150, label: 'Количество товаров', align: 'center', sorttype: 'int' },
+                    { name: 'date', width: 400, label: 'Дата', align: 'center' }
+                ],
+                pager: '#jqGridPager',
+                viewrecords: true,
+                rowNum: 50,
+                rowList: [50, 100, 200],
+                rownumbers: true,
+                caption: "Покупки",
+            });
+            $('#grid').jqGrid('setGridParam', {
+                datatype: 'local',
+                data: [
+                    {{range .Purchases}}
+                    { id: {{.Id}}, sum: {{.Sum}}, count: {{.Count}}, date: {{.Date}} },
+                    {{end}}
+                ],
+            }).trigger('reloadGrid');
+        });
+    </script>
+    <script type="text/javascript">
         $("#catalog").html("{{.Catalog}}");
     </script>
+
 </body>
 </html>

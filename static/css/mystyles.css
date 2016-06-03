@@ -34,9 +34,20 @@ a {
     vertical-align: top;
 }
 
-.headerBoxCenter {
+.headerBoxLeft {
     display: inline-block;
     margin: 5px;
+}
+
+.headerEmptyBlock {
+    width: 370px;
+    display: inline-block;
+}
+
+.headerBoxCenter {
+    display: inline-block;
+    margin: auto;
+    text-align: center;
 }
 
 .headerBoxRight {
