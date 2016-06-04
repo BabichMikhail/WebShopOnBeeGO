@@ -3,11 +3,13 @@ package controllers
 import (
     "github.com/astaxie/beego/orm"
     _ "github.com/mattn/go-sqlite3"
+    "github.com/fatih/structs"
     "WebShopOnBeeGO/models"
+    "reflect"
     "strconv"
-    "sort"
     "time"
     "fmt"
+
 )
 
 type CheckoutController struct {
@@ -137,77 +139,67 @@ func (c *PurchaseController) Get() {
     c.TplName = "purchases.tpl"
 }
 
-func TankCharacteristics(equip_id string) map[string]string {
+func TankCharacteristics(EquipId string) (t reflect.Type, names []string, chs map[string]interface{}) {
     o := orm.NewOrm()
+    names = structs.Names(models.TankCharacteristics{})
+    t = reflect.TypeOf(models.TankCharacteristics{})
     var ch models.TankCharacteristics
-    err:= o.Raw(fmt.Sprintf(`SELECT e.description, e.is_premium, e.level, e.name, n.name_i18n as "nation", ` +
-        `e.price, e.type, e.weight, e.max_weight, e.armor, e.hp, ` +
+    o.Raw(fmt.Sprintf(`SELECT e.description, e.is_premium, e.level, e.name, ` +
+        `n.name_i18n as "nation", e.price, e.type, e.weight, e.max_weight, e.armor, e.hp, ` +
         `e.speed_forward, e.speed_backward FROM tanks e inner join nations n on ` +
-        `e.nation = n.name WHERE e.equip_id = %s`, equip_id)).QueryRow(&ch)
-    fmt.Println(err, " ")
-    ans := map[string]string{}
-    ans["Description"] = ch.Description
-    if ch.Is_premium {
-        ans["Премиум"] = "Да"
-    } else {
-        ans["Премиум"] = "Нет"
-    }
-    ans["Уровень"] = strconv.Itoa(ch.Level)
-    ans["Название"] = ch.Name
-    ans["Нация"] = ch.Nation
-    ans["Стоимость"] = strconv.Itoa(ch.Price)
-    ans["Тип"] = ch.Type
-    ans["Вес"] = strconv.Itoa(ch.Weight)
-    ans["Макс. вес"] = strconv.Itoa(ch.Max_weight)
-    ans["Бронирование"] = ch.Armor
-    ans["Очки прочности"] = strconv.Itoa(ch.Hp)
-    ans["Скорость вперёд"] = strconv.Itoa(ch.Speed_forward)
-    ans["Скорость назад"] = strconv.Itoa(ch.Speed_backward)
-    return ans
+        `e.nation = n.name WHERE e.equip_id = %s`, EquipId)).QueryRow(&ch)
+    chs = structs.Map(ch)
+    return
 }
 
-func WarplaneCharacteristics(equip_id string) map[string]string {
+func WarplaneCharacteristics(EquipId string) (t reflect.Type, names []string, chs map[string]interface{}) {
     o := orm.NewOrm()
+    names = structs.Names(models.WarplaneCharacteristics{})
+    t = reflect.TypeOf(models.WarplaneCharacteristics{})
     var ch models.WarplaneCharacteristics
-    err:= o.Raw(fmt.Sprintf(`SELECT e.description, e.is_premium, e.level, e.name, ` +
+    o.Raw(fmt.Sprintf(`SELECT e.description, e.is_premium, e.level, e.name, ` +
         `n.name_i18n as "nation", e.price, e.type, e.weight, e.hp, e.speed_ground, ` +
         `e.maneuverability, e.max_speed, e.stall_speed, e.optimal_height, e.roll_maneuver, ` +
         `e.dive_speed, e.opt_maneuver_speed FROM warplanes e inner join nations n on ` +
-        `e.nation = n.name WHERE e.equip_id = %s`, equip_id)).QueryRow(&ch)
-    fmt.Println(err, " ")
-    ans := map[string]string{}
-    ans["Description"] = ch.Description
-    if ch.Is_premium {
-        ans["Премиум"] = "Да"
-    } else {
-        ans["Премиум"] = "Нет"
-    }
-    ans["Уровень"] = strconv.Itoa(ch.Level)
-    ans["Название"] = ch.Name
-    ans["Нация"] = ch.Nation
-    ans["Стоимость"] = strconv.Itoa(ch.Price)
-    ans["Тип"] = ch.Type
-    ans["Вес"] = strconv.Itoa(ch.Weight)
-    ans["Очки прочности"] = strconv.Itoa(ch.Hp)
-    ans["Скорость у поверхности земли"] = strconv.Itoa(ch.Speed_ground)
-    ans["Манёвренность"] = strconv.Itoa(ch.Maneuverability)
-    ans["Макс. скорость"] = strconv.Itoa(ch.Max_speed)
-    ans["Скорость сваливания"] = strconv.Itoa(ch.Stall_speed)
-    ans["Оптимальная высота"] = strconv.Itoa(ch.Optimal_height)
-    ans["Скорость вращения"] = strconv.Itoa(ch.Roll_maneuver)
-    ans["Скорость пикирования"] = strconv.Itoa(ch.Dive_speed)
-    ans["Опт. скорость маневрирования"] = strconv.Itoa(ch.Opt_maneuver_speed)
-    return ans
+        `e.nation = n.name WHERE e.equip_id = %s`, EquipId)).QueryRow(&ch)
+    chs = structs.Map(ch)
+    return
 }
 
-func GetCharacteristics(eq_type string, equip_id string) map[string]string {
-    if eq_type == "tanks" {
-        return TankCharacteristics(equip_id)
-    } else if eq_type == "warplanes" {
-        return WarplaneCharacteristics(equip_id)
-    } else {
-        return nil
+func GetCharacteristics(EquipType string, EquipId string) []struct{Key string; Value string} {
+    t, names, characteristics := func (EquipType string) (reflect.Type, []string, map[string]interface{}) {
+        if EquipType == "tanks" {
+            return TankCharacteristics(EquipId)
+        } else if EquipType == "warplanes" {
+            return WarplaneCharacteristics(EquipId)
+        } else {
+            return nil, nil, nil
+        }
+    }(EquipType)
+    descriptions := make([]struct{Key string; Value string}, len(names))
+    for _, fieldName := range names {
+        field, _ := t.FieldByName(fieldName)
+        index, _ := strconv.Atoi(field.Tag.Get("index"))
+        key := field.Tag.Get("key")
+        var value string
+        switch field.Tag.Get("type") {
+        case "int":
+            i, _ := characteristics[field.Name].(int)
+            value = strconv.Itoa(i)
+        case "bool":
+            b, _ := characteristics[field.Name].(bool)
+            if b {
+                value = "Да"
+            } else {
+                value = "Нет"
+            }
+        case "string":
+            value, _ = characteristics[field.Name].(string)
+        }
+        descriptions[index].Key = key
+        descriptions[index].Value = value
     }
+    return descriptions
 }
 
 type GoodsInfoController struct {
@@ -223,28 +215,9 @@ func (c *GoodsInfoController) Get() {
     equip_id := c.Ctx.Input.Param(":equip_id")
     var equip struct { Equip_type string; Image string }
     o.Raw(fmt.Sprintf("SELECT e.equip_type, e.image FROM equipments e WHERE e.equip_id = %s", equip_id)).QueryRow(&equip)
-    characteristics := GetCharacteristics(equip.Equip_type, equip_id)
-    fmt.Println(equip.Equip_type)
-    fmt.Println(equip_id)
-    c.Data["Description"] = characteristics["Description"]
-    descriptions := make([]struct{Key string; Value string}, len(characteristics))
-    keys := make([]string, len(characteristics))
-    i := 0
-    for key, _ := range characteristics {
-        if key == "Description" {
-            continue
-        }
-        keys[i] = key
-        i++
-    }
-    sort.Strings(keys)
-    i = 0
-    for _, key := range keys {
-        descriptions[i].Key = key
-        descriptions[i].Value = characteristics[key]
-        i++
-    }
-    c.Data["Characteristics"] = descriptions
+    descriptions := GetCharacteristics(equip.Equip_type, equip_id)
+    c.Data["Description"] = descriptions[0].Value
+    c.Data["Characteristics"] = descriptions[1:]
     c.Data["Image"] = equip.Image
     c.Data["Equip_id"] = equip_id
     c.TplName = "goodsinfo.tpl"

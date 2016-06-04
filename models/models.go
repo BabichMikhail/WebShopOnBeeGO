@@ -1,145 +1,39 @@
 package models
 
-import "time"
-
-type User struct {
-    Id              int
-    Login           string    `orm:"size(64);unique" valid:"Required"`
-    Password        string    `orm:"size(64)"        valid:"Required;MinSize(3)"`
-    Rights          int
-}
-
-func (user *User) TableName() string {
-    return "users"
-}
-
-type CatalogsTreePath struct {
-    Id              int
-    Ctpid           int
-    Name            string
-    Name_i18n       bool
-}
-
-func (catalogstreepath *CatalogsTreePath) TableName() string {
-    return "catalogstreepath"
-}
-
-type Catalogs struct {
-    Id              int
-    Cid             int
-    Ancestor        int
-    Descendant      int
-}
-
-func (catalogs *Catalogs) TableName() string {
-    return "catalogs"
-}
-
-type Equipment struct {
-    Id              int
-    Description     string
-    Equip_id        int
-    Equip_type      string
-    Image           string
-    Is_gift         bool
-    Is_premium      bool
-    Level           int
-    Name            string
-    Nation          string
-    Price           int
-    Short_name      string
-    Small_image     string
-    Type            string
-}
-
-func (equipment *Equipment) TableName() string {
-    return "equipments"
-}
-
 type TankCharacteristics struct {
-    Description     string
-    Is_premium      bool
-    Level           int
-    Name            string
-    Nation          string
-    Price           int
-    Type            string
-    Weight          int
-    Max_weight      int
-    Armor           string
-    Hp              int
-    Speed_forward   int
-    Speed_backward  int
-}
-
-type Tank struct {
-    Id              int
-    Equip_id        int
-    TankCharacteristics
-}
-
-func (tank *Tank) TableName() string {
-    return "tanks"
+    Description     string  `type:"string" key:"Описание" index:"0"`
+    Is_premium      bool    `type:"bool" key:"Премиум" index:"5"`
+    Level           int     `type:"int" key:"Уровень" index:"3"`
+    Name            string  `type:"string" key:"Название" index:"1"`
+    Nation          string  `type:"string" key:"Нация" index:"2"`
+    Price           int     `type:"int" key:"Стоимость" index:"6"`
+    Type            string  `type:"string" key:"Тип" index:"4"`
+    Weight          int     `type:"int" key:"Вес" index:"8"`
+    Max_weight      int     `type:"int" key:"Максимальный вес" index:"9"`
+    Armor           string  `type:"string" key:"Бронирование" index:"10"`
+    Hp              int     `type:"int" key:"Очки прочности" index:"7"`
+    Speed_forward   int     `type:"int" key:"Скорость вперёд" index:"11"`
+    Speed_backward  int     `type:"int" key:"Скорость назад" index:"12"`
 }
 
 type WarplaneCharacteristics struct {
-    Description     string
-    Is_premium      bool
-    Level           int
-    Name            string
-    Nation          string
-    Price           int
-    Type            string
-    Weight          int
-    Hp              int
-    Speed_ground    int
-    Maneuverability int
-    Max_speed       int
-    Stall_speed     int
-    Optimal_height  int
-    Roll_maneuver   int
-    Dive_speed      int
-    Opt_maneuver_speed int
-}
-
-type Warplane struct {
-    Id              int
-    Equip_id        int
-    WarplaneCharacteristics
-}
-
-func (warplane *Warplane) TableName() string {
-    return "warplanes"
-}
-
-type Type struct {
-    Id              int
-    Name            string
-    Name_catalog    string
-}
-
-func (t *Type) TableName() string {
-    return "types"
-}
-
-type Level struct {
-    Id              int
-    Value           string
-    Level           int
-}
-
-func (t *Level) TableName() string {
-    return "levels"
-}
-
-type Nation struct {
-    Id              int
-    Name            string
-    Name_i18n       string
-}
-
-func (t *Nation) TableName() string {
-    return "nations"
+    Description     string  `type:"string" key:"Описание" index:"0"`
+    Is_premium      bool    `type:"bool" key:"Премиум" index:"5"`
+    Level           int     `type:"int" key:"Уровень" index:"3"`
+    Name            string  `type:"string" key:"Название" index:"1"`
+    Nation          string  `type:"string" key:"Нация" index:"2"`
+    Price           int     `type:"int" key:"Стоимость" index:"6"`
+    Type            string  `type:"string" key:"Тип" index:"4"`
+    Weight          int     `type:"int" key:"Вес" index:"8"`
+    Hp              int     `type:"int" key:"Очки прочности" index:"7"`
+    Speed_ground    int     `type:"int" key:"Скорость у поверхности земли" index:"9"`
+    Maneuverability int     `type:"int" key:"Манёвренность" index:"10"`
+    Max_speed       int     `type:"int" key:"Максимальная скорость" index:"11"`
+    Stall_speed     int     `type:"int" key:"Скорость сваливания" index:"12"`
+    Optimal_height  int     `type:"int" key:"Оптимальный вес" index:"13"`
+    Roll_maneuver   int     `type:"int" key:"Скорость вращения" index:"14"`
+    Dive_speed      int     `type:"int" key:"Скорость пикирования" index:"15"`
+    Opt_maneuver_speed int  `type:"int" key:"Оптимальная скорость маневрирования" index:"16"`
 }
 
 type Fields struct {
@@ -160,26 +54,4 @@ type EquipInTable struct {
 type ExtEquipInTable struct {
     EquipInTable
     Count       int
-}
-
-type Purchase struct {
-    Id          int
-    Sum         int
-    Count       int
-    Date        time.Time
-}
-
-func (p *Purchase) TableName() string {
-    return "purchases"
-}
-
-type Good struct {
-    Id          int
-    Cost        int
-    Count       int
-    Purchase_id int
-}
-
-func (g *Good) TableName() string {
-    return "goods"
 }
