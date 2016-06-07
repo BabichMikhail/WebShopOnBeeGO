@@ -42,7 +42,7 @@ func (c *LoginController) Signup() {
     c.SetSession("authorized", true)
     c.SetSession("username", login)
     c.SetSession("userright", 3)
-    c.Redirect("/webshop", 302)
+    c.RedirectOnLastPage()
 }
 
 func (c *LoginController) Login() {
@@ -65,7 +65,7 @@ func (c *LoginController) Login() {
         c.SetSession("authorized", true)
         c.SetSession("username", login)
         c.SetSession("userright", user.Rights)
-        c.Redirect("/webshop", 302)
+        c.RedirectOnLastPage()
         return
     }
     c.Data["Error"] = true
@@ -74,5 +74,5 @@ func (c *LoginController) Login() {
 
 func (c *LoginController) Logout() {
     c.SetSession("authorized", false)
-    c.Redirect("/webshop", 302)
+    c.RedirectOnLastPage()
 }

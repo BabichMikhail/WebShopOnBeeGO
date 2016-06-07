@@ -67,6 +67,7 @@ type PurchaseController struct {
 }
 
 func (c *PurchaseController) Post() {
+    c.SetSession("LastUrl", c.Ctx.Request.URL.String())
     c.SetAuthorized()
     c.SetCatalog()
     c.SetPurchases()
@@ -220,5 +221,5 @@ func (c *GoodsInfoController) Get() {
     c.Data["Characteristics"] = descriptions[1:]
     c.Data["Image"] = equip.Image
     c.Data["Equip_id"] = equip_id
-    c.TplName = "goodsinfo.tpl"
+    c.TplName = "goodsInfo.tpl"
 }

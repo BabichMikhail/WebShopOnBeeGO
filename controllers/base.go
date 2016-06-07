@@ -47,3 +47,12 @@ func (c *BaseController) SetPurchases() {
         c.Data["PurchaseCount"] = Count
     }
 }
+
+func (c *BaseController) RedirectOnLastPage() {
+    url := c.GetSession("LastUrl")
+    if url != nil {
+        c.Redirect(url.(string), 302)
+        return
+    }
+    c.Redirect("/webshop", 302)
+}
