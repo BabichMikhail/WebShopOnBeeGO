@@ -26,7 +26,7 @@ a {
 .catalog {
     text-align: left;
     vertical-align: top;
-    width: 350px;
+    width: 200px;
 }
 
 .grid {
@@ -54,10 +54,6 @@ a {
     display: inline-block;
     float: right;
     margin: 5px;
-}
-
-.err_msg {
-
 }
 
 .form-div {
@@ -124,4 +120,210 @@ ul.mainCat li:hover > ul {
 
 ul.subCat li:hover > ul {
     left: 218px;
+}
+
+.equipment  {
+    width: 280px;
+    border: solid 1px #537DBC;
+    /*background-color: #FFBF50;*/
+}
+
+table.equipment tbody tr td {
+    text-align: center;
+}
+
+table.equipment tbody tr td a {
+    color: #575757;
+    font-weight: bold;
+}
+
+.equipTable {
+    border: solid 1px #537DBC;
+    border-collapse: collapse;
+}
+
+.equipTablePurchase {
+    border: solid 1px #537DBC;
+    border-collapse: collapse;
+}
+
+table.equipTable thead tr {
+    height: 30px;
+}
+
+table.equipTablePurchase thead tr {
+    height: 30px;
+}
+
+table.equipTable thead tr th {
+    text-align: center;
+}
+
+table.equipTablePurchase thead tr th {
+    text-align: center;
+}
+
+table.equipTable tbody tr td {
+    text-align: center;
+}
+
+table.equipTablePurchase tbody tr td {
+    text-align: center;
+}
+
+table.equipTable tbody tr td a {
+    color: #575757;
+    font-weight: bold;
+}
+
+table.equipTablePurchase tbody tr td a {
+    color: #575757;
+    font-weight: bold;
+}
+
+table.equipTablePurchase tbody tr td {
+    height: 20px;
+    border-top: solid 1px #537DBC;
+}
+
+table.equipTable tbody tr td {
+    height: 20px;
+    border-top: solid 1px #537DBC;
+    border-left: solid 1px #537DBC;
+    border-right: solid 1px #537DBC;
+}
+
+.equipCodeHeader {
+    width: 100px;
+    border-left: solid 1px #537DBC;
+    border-right: solid 1px #537DBC;
+}
+
+.equipPhotoHeader {
+    width: 100px;
+    border-left: solid 1px #537DBC;
+    border-right: solid 1px #537DBC;
+}
+
+.equipNameHeader {
+    width: 220px;
+    border-left: solid 1px #537DBC;
+    border-right: solid 1px #537DBC;
+}
+
+.equipNationHeader {
+    width: 150px;
+    border-left: solid 1px #537DBC;
+    border-right: solid 1px #537DBC;
+}
+
+.equipCostHeader {
+    width: 100px;
+    border-left: solid 1px #537DBC;
+    border-right: solid 1px #537DBC;
+}
+
+.equipCountHeader {
+    width: 100px;
+    border-left: solid 1px #537DBC;
+    border-right: solid 1px #537DBC;
+}
+
+.equipEmptyHeader {
+    width: 120px;
+}
+
+.equipCode {
+    border-left: solid 1px #537DBC;
+    border-right: solid 1px #537DBC;
+}
+
+.equipPhoto {
+    border-left: solid 1px #537DBC;
+    border-right: solid 1px #537DBC;
+}
+
+.equipName {
+    border-left: solid 1px #537DBC;
+    border-right: solid 1px #537DBC;
+}
+
+.equipNation {
+    border-left: solid 1px #537DBC;
+    border-right: solid 1px #537DBC;
+}
+
+.equipCost {
+    border-left: solid 1px #537DBC;
+    border-right: solid 1px #537DBC;
+}
+
+.equipCount {
+    width: 100px;
+    border-left: solid 1px #537DBC;
+    border-right: solid 1px #537DBC;
+}
+
+.equipPlus {}
+
+.equipMinus {}
+
+.equipBuy {}
+
+.button {
+    background: none;
+    border: none;
+    font: inherit;
+    color: #575757;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.goodsTable {
+    border-collapse: collapse;
+}
+
+table.goodsTable tbody tr td a {
+    color: #575757;
+    font-weight: bold;
+}
+
+.characteristics {
+    border-left: solid 2px #537DBC;
+    border-top: solid 2px #537DBC;
+}
+
+.descrTitle {
+    font-weight: bold;
+    height: 30px;
+    padding: 4px;
+    padding-left: 10px;
+}
+
+.descr {
+    border-left: solid 2px #537DBC;
+    padding: 4px;
+    padding-left: 10px;
+}
+
+.propImg {
+    border-left: solid 2px #537DBC;
+    padding: 4px;
+    padding-left: 10px;
+}
+
+.propName {
+    width: 300px;
+    border-left: solid 2px #537DBC;
+    padding-left: 10px;
+}
+
+.afterLastProp {
+    border-left: solid 2px #537DBC;
+    border-bottom: solid 2px #537DBC;
+    height: 4px;
+}
+
+.goodInfoImg {
+    width: 50px;
 }

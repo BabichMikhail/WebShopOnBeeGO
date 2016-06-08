@@ -4,7 +4,6 @@ import (
     "github.com/astaxie/beego/orm"
     _ "github.com/mattn/go-sqlite3"
     "fmt"
-    "C"
 )
 
 type AddProductController struct {
@@ -22,7 +21,7 @@ func (c *AddProductController) Get() {
     c.SetSession("Purchases", Purchases)
     S := c.GetSession("Sum")
     Count := c.GetSession("PurchaseCount")
-    var Sum C.ulonglong
+    var Sum int64
     Sum = 0
     PCount := 0
     o := orm.NewOrm()
@@ -31,10 +30,10 @@ func (c *AddProductController) Get() {
     }
     o.Raw("SELECT e.price FROM equipments e WHERE e.equip_id = ?", EquipId).QueryRow(&eq)
     if S == nil {
-        Sum = C.ulonglong(eq.Price)
+        Sum = orm.ToInt64(eq.Price)
         PCount = 1
     } else {
-        Sum = S.(C.ulonglong) + C.ulonglong(Purchases[EquipId]*eq.Price)
+        Sum = orm.ToInt64(S) + orm.ToInt64(Purchases[EquipId]*eq.Price)
         PCount = Count.(int) + 1
     }
     fmt.Println(Sum, PCount, eq.Price)

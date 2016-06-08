@@ -33,13 +33,43 @@
         <tr>
             <td class="catalog" id="catalog">
             </td>
-            <td>
-                {{.CenterPage}}
+            <td class="equipments" id="equipments">
             </td>
         </tr>
     </table>
     <script type="text/javascript">
         $("#catalog").html("{{.Catalog}}");
+
+        function setEquipments() {
+            var width = 4
+            var equipments = [
+                {{range .Equipment}}
+                { id: {{.Equip_id}}, name: {{.Name}}, price: {{.Price}}, image: {{.Small_image}}, isCount: {{.IsCount}}},
+                {{end}}
+            ]
+            var html = "<table><tbody>"
+            for (var i = 0; i < equipments.length;) {
+                html += '<tr>'
+                for (var j = 0; j < width && i < equipments.length; ++i, ++j) {
+                    var href = '/webshop/goodsinfo/' + equipments[i].id
+                    html += '<td><table class="equipment"><tr><td><a href="' + href + '">' +
+                        '<img src="' + equipments[i].image + '"></img></a></td></tr>' +
+                        '<tr><td><a href="' + href + '">' + equipments[i].name + '</a></td></tr>' +
+                        '<tr><td>' + equipments[i].price + '</td></tr>'
+                    if (equipments[i].isCount) {
+                        html += '<tr><td><a href="/webshop/purchases/">В корзину</a></td></tr></td></table>'
+                    } else {
+                        html += '<tr><td><a href="/webshop/card/add/' + equipments[i].id + '">Купить</a></td></tr></td></table>'
+                    }
+                }
+                html += '</tr>'
+            }
+            html += "</tbody></table>"
+            return html
+        }
+
+        $("#equipments").html(setEquipments());
+
     </script>
 </body>
 </html>

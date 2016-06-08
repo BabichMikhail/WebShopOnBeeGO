@@ -17,6 +17,8 @@ func init() {
     beego.Router("/webshop/signup", &ctls.LoginController{}, "get,post:Signup")
     beego.Router("/webshop/card/add/:equip_id([0-9]+)", &ctls.AddProductController{})
     beego.Router("/webshop/purchases", &ctls.PurchaseController{})
+    beego.Router("/webshop/purchases/change/:equip_id([0-9]+)/:add([0-1])", &ctls.PurchaseController{}, "get,post:Change")
+    beego.Router("/webshop/purchases/delete/:equip_id([0-9]+)", &ctls.PurchaseController{}, "get,post:Delete")
     beego.Router("/webshop/goodsinfo/:equip_id([0-9]+)", &ctls.GoodsInfoController{})
     beego.Router("/webshop/purchases/checkout", &ctls.CheckoutController{})
     beego.Router("/webshop/admin", &ctls.AdminController{})

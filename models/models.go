@@ -43,15 +43,38 @@ type Fields struct {
     Nation      string
 }
 
+type EquipHomePage struct {
+    Equip_id    int
+    Name        string
+    Price       int
+    Small_image string
+}
+
+type EquipHomePageIsCount struct {
+    EquipHomePage
+    IsCount     bool
+}
+
 type EquipInTable struct {
     Equip_id    int
-    Small_image string
     Name        string
-    Nation      string
     Price       int
+    Small_image string
+    Nation      string
 }
 
 type ExtEquipInTable struct {
     EquipInTable
     Count       int
+}
+
+type EquipInTableIsCount struct {
+    EquipInTable
+    IsCount     bool
+}
+
+type BaseEquip struct {
+    Equip_id    int
+    Name        string
+    Price       int
 }

@@ -5,6 +5,7 @@ import (
     "github.com/astaxie/beego/orm"
     _ "github.com/mattn/go-sqlite3"
     "WebShopOnBeeGO/models"
+    "strconv"
     "fmt"
 )
 
@@ -13,6 +14,7 @@ type AdminController struct {
 }
 
 func (c *AdminController) Get() {
+    c.SetSession("LastUrl", c.Ctx.Request.URL.String())
     if c.GetSession("authorized") == nil || c.GetSession("userright").(int) != 0 {
         c.Redirect("/webshop", 302)
         return
@@ -22,9 +24,12 @@ func (c *AdminController) Get() {
     c.SetPurchases()
     o := orm.NewOrm()
     var purchases []models.Purchase
-    num, err := o.Raw(`SELECT p.id, p.sum, p.count, p.date FROM purchases p`).QueryRows(&purchases)
+    o.Raw(`SELECT p.id, p.sum, p.count, p.date FROM purchases p`).QueryRows(&purchases)
+    var goods []models.Good
+    num, err := o.Raw(`SELECT g.purchase_id, g.count, g.name, g.price, g.equip_id FROM goods g`).QueryRows(&goods)
     fmt.Println(num, err)
     c.Data["Purchases"] = purchases
+    c.Data["Goods"] = goods
     c.TplName = "admin.tpl"
 }
 
@@ -33,9 +38,26 @@ type WebShopController struct {
 }
 
 func (c *WebShopController) HomePage() {
+    c.SetSession("LastUrl", c.Ctx.Request.URL.String())
     c.SetAuthorized()
     c.SetCatalog()
     c.SetPurchases()
+    var equipments []models.EquipHomePage
+    o := orm.NewOrm()
+    o.Raw(`SELECT e.equip_id, e.name, e.price, e.small_image FROM equipments e`).QueryRows(&equipments)
+    extEquipments := make([]models.EquipHomePageIsCount, len(equipments))
+    P := c.GetSession("Purchases")
+    var purchases map[string]int
+    if P != nil {
+        purchases = P.(map[string]int)
+    } else {
+        purchases = map[string]int{}
+    }
+    for key, value := range equipments {
+        extEquipments[key].EquipHomePage = value
+        extEquipments[key].IsCount = purchases[strconv.Itoa(value.Equip_id)] > 0
+    }
+    c.Data["Equipment"] = extEquipments
     c.TplName = "main.tpl"
 }
 
@@ -84,7 +106,23 @@ func (c *WebShopController) Catalog() {
     query += "INNER JOIN nations n ON n.name = e.nation "
     o.Raw(query + query_WHERE).QueryRows(&equipments)
     fmt.Println(len(equipments))
-    c.Data["Equipment"] = equipments
+    extEquipments := make([]models.EquipInTableIsCount, len(equipments))
+    P := c.GetSession("Purchases")
+    var purchases map[string]int
+    if P != nil {
+        purchases = P.(map[string]int)
+    } else {
+        purchases = map[string]int{}
+    }
+    i := 0
+    for _, value := range equipments {
+        extEquipments[i] = models.EquipInTableIsCount{
+            IsCount: purchases[strconv.Itoa(value.Equip_id)] != 0,
+            EquipInTable: value,
+        }
+        i++
+    }
+    c.Data["Equipment"] = extEquipments
     c.TplName = "grid.tpl"
 }
 

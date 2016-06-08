@@ -34,36 +34,69 @@
             <td class="catalog" id="catalog">
             </td>
             <td class="grid">
-                <table id="grid"></table>
-                <div id="jqGridPager"></div>
+                <table id="grid1"></table>
+                <div id="jqGridPager1"></div>
+            </td>
+            <td class="grid">
+                <table id="grid2"></table>
+                <div id="jqGridPager2"></div>
             </td>
         </tr>
     </table>
     <script type="text/javascript">
         $(document).ready(function () {
-            $('#grid').jqGrid({
+            $('#grid1').jqGrid({
                 datatype: 'local',
                 data: [],
                 height: 650,
-                width: 700,
+                width: 600,
                 colModel: [
                     { name: 'id', width: 50, label: 'ID', align: 'center', key: true },
                     { name: 'sum', width: 150, label: 'Сумма', align: 'center', sorttype: 'int' },
-                    { name: 'count', width: 150, label: 'Количество товаров', align: 'center', sorttype: 'int' },
+                    { name: 'count', width: 150, label: 'Количество', align: 'center', sorttype: 'int' },
                     { name: 'date', width: 400, label: 'Дата', align: 'center' }
                 ],
-                pager: '#jqGridPager',
+                pager: '#jqGridPager1',
                 viewrecords: true,
                 rowNum: 50,
                 rowList: [50, 100, 200],
                 rownumbers: true,
                 caption: "Покупки",
             });
-            $('#grid').jqGrid('setGridParam', {
+            $('#grid1').jqGrid('setGridParam', {
                 datatype: 'local',
                 data: [
                     {{range .Purchases}}
                     { id: {{.Id}}, sum: {{.Sum}}, count: {{.Count}}, date: {{.Date}} },
+                    {{end}}
+                ],
+            }).trigger('reloadGrid');
+        });
+        $(document).ready(function () {
+            $('#grid2').jqGrid({
+                datatype: 'local',
+                data: [],
+                height: 650,
+                width: 800,
+                colModel: [
+                    { name: 'id', width: 150, label: 'ID покупки', align: 'center', key: true },
+                    { name: 'cost', width: 150, label: 'Цена', align: 'center', sorttype: 'int' },
+                    { name: 'count', width: 150, label: 'Количество', align: 'center', sorttype: 'int' },
+                    { name: 'equip_id', width: 150, label: 'Код товара', align: 'center', sorttype: 'int' },
+                    { name: 'name', width: 400, label: 'Название', align: 'center' }
+                ],
+                pager: '#jqGridPager2',
+                viewrecords: true,
+                rowNum: 50,
+                rowList: [50, 100, 200],
+                rownumbers: true,
+                caption: "Купленные товары",
+            });
+            $('#grid2').jqGrid('setGridParam', {
+                datatype: 'local',
+                data: [
+                    {{range .Goods}}
+                    { id: {{.Purchase_id}}, cost: {{.Price}}, count: {{.Count}}, equip_id: {{.Equip_id}}, name: {{.Name}} },
                     {{end}}
                 ],
             }).trigger('reloadGrid');

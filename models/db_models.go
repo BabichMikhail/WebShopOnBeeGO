@@ -78,7 +78,7 @@ func (warplane *Warplane) TableName() string {
 
 type Purchase struct {
     Id          int
-    Sum         int
+    Sum         int64
     Count       int
     Date        time.Time
 }
@@ -89,7 +89,9 @@ func (p *Purchase) TableName() string {
 
 type Good struct {
     Id          int
-    Cost        int
+    Equip_id    int
+    Price       int
+    Name        string
     Count       int
     Purchase_id int
 }

@@ -36,36 +36,53 @@
 
                 <td class="grid">
                     <form method="POST" action='{{urlfor "PurchaseController.Get"}}'>
-                    <table>
+                    <table class="equipTablePurchase">
                         <thead>
                             <tr>
-                                <th>Код</th>
-                                <th>Фото</th>
-                                <th>Наименование товара</th>
-                                <th>Производитель</th>
-                                <th>Цена</th>
-                                <th>Количество</th>
+                                <th class="equipCodeHeader">Код</th>
+                                <th class="equipPhotoHeader">Фото</th>
+                                <th class="equipNameHeader">Наименование товара</th>
+                                <th class="equipNationHeader">Производитель</th>
+                                <th class="equipCostHeader">Цена</th>
+                                <th class="equipCountHeader">Количество</th>
+                                <th class="equipEmptyHeader" colspan="3"><th>
                             </tr>
                         </thead>
                         <tbody>
                             {{range .Equipment}}
                             <tr>
-                                <td>{{.Equip_id}}</td>
-                                <td><img src="{{.Small_image}}"></img></td>
-                                <td><a href="/webshop/goodsinfo/{{.Equip_id}}">{{.Name}}</a></td>
-                                <td>{{.Nation}}</td>
-                                <td>{{.Price}}</td>
-                                <td><input name="count{{.Equip_id}}" id="count{{.Equip_id}}" value="{{.Count}}" onChange="setSum()"/></td>
+                                <td class="equipCode">{{.Equip_id}}</td>
+                                <td class="equipPhoto"><img src="{{.Small_image}}"></img></td>
+                                <td class="equipName"><a href="/webshop/goodsinfo/{{.Equip_id}}">{{.Name}}</a></td>
+                                <td class="equipNation">{{.Nation}}</td>
+                                <td class="equipCost">{{.Price}}</td>
+                                <td class="equipCount"><p>{{.Count}}</p></td>
+                                <td class="equipPlus"><a href="{{urlfor "PurchaseController.Get"}}/change/{{.Equip_id}}/1">
+                                    <img src="/static/img/grid/plus.jpg"></img>
+                                </a></td>
+                                <td class="equipMinus"><a href="{{urlfor "PurchaseController.Get"}}/change/{{.Equip_id}}/0">
+                                    <img src="/static/img/grid/minus.jpg"></img>
+                                </a></td>
+                                <td class="equipMinus"><a href="{{urlfor "PurchaseController.Get"}}/delete/{{.Equip_id}}">
+                                    <img src="/static/img/grid/x.jpg"></img>
+                                </a></td>
                             </tr>
                             {{end}}
                             <tr>
-                                <td colspan="5"></td>
-                                <td><input type="submit" value='"Купить"'/></td>
+                                <td class="equipEmptyHeader" colspan="4"></td>
+                                <td class="equipCost">
+                                    {{if .Authorized}}
+                                    {{else}}
+                                    <a href="/webshop/login">Войти</a>
+                                    {{end}}
+                                </td>
+                                <td class="equipCount"><input class="button" type="submit" value='"Купить"'/></td>
+                                <td class="equipEmptyHeader" colspan="3"></td>
+                            </tr>
                         </tbody>
                     </table>
                     </form>
                 </td>
-
         </tr>
     </table>
     <script type="text/javascript">

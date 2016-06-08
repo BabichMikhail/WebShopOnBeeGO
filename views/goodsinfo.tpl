@@ -34,26 +34,42 @@
             <td class="catalog" id="catalog">
             </td>
             <td class="goods">
-                <table>
+                <table class="goodsTable">
                     <tbody>
                         <tr>
-                            <td><img src="{{.Image}}"></img></td>
-                            <td><a href="/webshop/card/add/{{.Equip_id}}">Купить</a></td>
+                            <td class="propImg"><img src="{{.Image}}"></img></td>
+                            {{if .IsCount}}
+                            <td width="500px"></td>
+                            <td class="equipPlus goodInfoImg"><a href="{{urlfor "PurchaseController.Get"}}/change/{{.Equip_id}}/1">
+                                <img src="/static/img/grid/plus.jpg"></img>
+                            </a></td>
+                            <td class="equipMinus goodInfoImg"><a href="{{urlfor "PurchaseController.Get"}}/change/{{.Equip_id}}/0">
+                                <img src="/static/img/grid/minus.jpg"></img>
+                            </a></td>
+                            <td></td>
+                            {{else}}
+                            <td colspan="3"></td>
+                            <td class="equipBuy"><a href="/webshop/card/add/{{.Equip_id}}">Купить</a></td>
+                            {{end}}
                         </tr>
                         <tr>
-                            <td>Описание</td>
+                            <td class="characteristics descrTitle" colspan="5">Описание</td>
                         </tr>
                         <tr>
-                            <td colspan="2">{{.Description}}</td>
+                            <td class="descr" colspan="5">{{.Description}}</td>
                         </tr>
+                        <tr><td class="afterLastProp" colspan="5"></td></tr>
                         <tr>
-                            <td>Характеристики</td>
+                            <td class="characteristics descrTitle" colspan="5">Характеристики</td>
                         </tr>
                         {{range .Characteristics}}
                         <tr>
-                            <td>{{.Key}}</td><td>{{.Value}}</td>
+                            <td class="propName">{{.Key}}</td>
+                            <td class="propValue">{{.Value}}</td>
+                            <td colspan="3"></td>
                         </tr>
                         {{end}}
+                        <tr><td class="afterLastProp" colspan="5"></td></tr>
                     </tbody>
                 </table>
             </td>

@@ -275,13 +275,10 @@ sub Admin {
         )~);
 }
 
-#Tanks;
-#Warplanes;
-#ClosureTable;
-#Types;
-#Nations;
-#Levels;
-#Admin;
-#$dbh->do(qq ~DELETE FROM purchases WHERE id IN (1, 2, 3, 4, 5)~);
-$dbh->do(qq ~DELETE FROM users~);
+Tanks;
+Warplanes;
+ClosureTable;
+Types;
+Nations;
+Levels;
 Admin;

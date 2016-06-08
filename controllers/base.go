@@ -4,6 +4,8 @@ import (
     "github.com/astaxie/beego"
     "WebShopOnBeeGO/catalogs"
     "github.com/astaxie/beego/orm"
+    "strconv"
+    "fmt"
 )
 
 type BaseController struct {
@@ -55,4 +57,31 @@ func (c *BaseController) RedirectOnLastPage() {
         return
     }
     c.Redirect("/webshop", 302)
+}
+
+func (c *BaseController) UpdatePurchases() {
+    P := c.GetSession("Purchases")
+    if P == nil {
+        c.SetSession("Sum", 0)
+        c.SetSession("PurchaseCount", 0)
+    }
+    purchases := P.(map[string]int)
+    Sum := 0
+    Count := 0
+    o := orm.NewOrm()
+    var eqs[]struct{Equip_id int; Price int}
+    query := ""
+    for key, _ := range purchases {
+        if query != "" {
+            query += ","
+        }
+        query += key
+    }
+    o.Raw(fmt.Sprintf("SELECT e.equip_id, e.price FROM equipments e WHERE e.equip_id IN (%s)", query)).QueryRows(&eqs)
+    for _, value := range eqs {
+        Sum += value.Price*purchases[strconv.Itoa(value.Equip_id)]
+        Count += purchases[strconv.Itoa(value.Equip_id)]
+    }
+    c.SetSession("Sum", Sum)
+    c.SetSession("PurchaseCount", Count)
 }
