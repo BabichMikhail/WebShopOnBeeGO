@@ -5,33 +5,10 @@ import (
     "github.com/astaxie/beego/orm"
     _ "github.com/mattn/go-sqlite3"
     "WebShopOnBeeGO/models"
+    "strings"
     "strconv"
     "fmt"
 )
-
-type AdminController struct {
-    BaseController
-}
-
-func (c *AdminController) Get() {
-    c.SetSession("LastUrl", c.Ctx.Request.URL.String())
-    if c.GetSession("authorized") == nil || c.GetSession("userright").(int) != 0 {
-        c.Redirect("/webshop", 302)
-        return
-    }
-    c.SetAuthorized()
-    c.SetCatalog()
-    c.SetPurchases()
-    o := orm.NewOrm()
-    var purchases []models.Purchase
-    o.Raw(`SELECT p.id, p.sum, p.count, p.date FROM purchases p`).QueryRows(&purchases)
-    var goods []models.Good
-    num, err := o.Raw(`SELECT g.purchase_id, g.count, g.name, g.price, g.equip_id FROM goods g`).QueryRows(&goods)
-    fmt.Println(num, err)
-    c.Data["Purchases"] = purchases
-    c.Data["Goods"] = goods
-    c.TplName = "admin.tpl"
-}
 
 type WebShopController struct {
     BaseController
@@ -78,6 +55,22 @@ func (c *WebShopController) Catalog() {
     equip_name := c.Ctx.Input.Param(":equip")
     equip_type := c.Ctx.Input.Param(":type")
     equip_level := c.Ctx.Input.Param(":level")
+    current_place := "Каталог"
+    o := orm.NewOrm()
+    var name_i18n struct { Name_i18n string }
+    if equip_name != "" {
+        o.Raw(`SELECT t.name_i18n FROM translates t WHERE t.name = ?`, equip_name).QueryRow(&name_i18n)
+        current_place += fmt.Sprintf(" / %s", name_i18n.Name_i18n)
+        if equip_type != "" {
+            o.Raw(`SELECT t.name_i18n FROM translates t WHERE t.name = ?`, equip_type).QueryRow(&name_i18n)
+            current_place += fmt.Sprintf(" / %s", name_i18n.Name_i18n)
+            if equip_level != "" {
+                o.Raw(`SELECT t.name_i18n FROM translates t WHERE t.name = ?`, equip_level).QueryRow(&name_i18n)
+                current_place += fmt.Sprintf(" / %s", name_i18n.Name_i18n)
+            }
+        }
+    }
+    c.Data["CurrentPlace"] = current_place
     if equip_type != "" {
         query += `INNER JOIN types t ON e.type = t.name `
         query_WHERE += fmt.Sprintf(`WHERE t.name_catalog = "%s" and e.equip_type = "%s" `,
@@ -85,17 +78,15 @@ func (c *WebShopController) Catalog() {
     } else if equip_name != "" {
         query_WHERE += fmt.Sprintf(`WHERE e.equip_type = "%s" `, equip_name)
     }
-    o := orm.NewOrm()
+
     if equip_level != "" {
         var levels []struct { Level int }
         o.Raw(fmt.Sprintf(`SELECT l.level FROM levels l WHERE l.value = "%s"`, equip_level)).QueryRows(&levels)
-        add_query_WHERE := ""
+        var values []string
         for _, l := range levels {
-            if add_query_WHERE != "" {
-                add_query_WHERE += "OR "
-            }
-            add_query_WHERE += fmt.Sprintf("e.level = %d ", l.Level)
+            values = append(values, strconv.Itoa(l.Level))
         }
+        add_query_WHERE := fmt.Sprintf("e.level IN (%s)", strings.Join(values, ","))
         if query_WHERE == "" {
             query_WHERE = "WHERE "
         } else {

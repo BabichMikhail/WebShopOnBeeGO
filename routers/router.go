@@ -21,5 +21,10 @@ func init() {
     beego.Router("/webshop/purchases/delete/:equip_id([0-9]+)", &ctls.PurchaseController{}, "get,post:Delete")
     beego.Router("/webshop/goodsinfo/:equip_id([0-9]+)", &ctls.GoodsInfoController{})
     beego.Router("/webshop/purchases/checkout", &ctls.CheckoutController{})
-    beego.Router("/webshop/admin", &ctls.AdminController{})
+    beego.Router("/webshop/admin", &ctls.AdminController{}, "get:AdminHome")
+    beego.Router("/webshop/admin/purchases", &ctls.AdminController{})
+    beego.Router("/webshop/admin/editcard/:tableName([a-z]+)/:equip_id([0-9]+)", &ctls.AdminController{}, "post:SaveGoodsInfo")
+    beego.Router("/webshop/admin/edittable/:tableName([a-z]+)", &ctls.AdminController{}, "get:EditTable")
+    beego.Router("/webshop/admin/edittable/:tableName([a-z]+)", &ctls.AdminController{}, "post:ApplyChanges")
+    beego.Router("/webshop/user", &ctls.UserController{})
 }

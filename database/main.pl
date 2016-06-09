@@ -60,12 +60,14 @@ sub Tanks {
             equipments (
                 description, equip_id, equip_type, image,
                 is_gift, is_premium, level, name, nation,
-                price, short_name, small_image, type
+                price, short_name, small_image, type,
+                have_goods, delivery_time
             )
             VALUES (
                 "$_->{description}", $_->{tank_id}, "tanks", "$_->{big_icon}",
                 $is_gift, $is_premium, $_->{tier}, "$_->{name}", "$_->{nation}",
-                $_->{price}, "$_->{short_name}", "$_->{small_icon}", "$_->{type}"
+                $_->{price}, "$_->{short_name}", "$_->{small_icon}", "$_->{type}",
+                1, 3
             )~);
         $dbh->do(qq ~INSERT INTO
             tanks (
@@ -99,19 +101,18 @@ sub Warplanes {
         my $is_premium = $_->{is_premium} eq "false" ? "0" : "1";
         my $is_gift = $_->{is_gift} eq "false" ? "0" : "1";
         my $f = $_->{features};
-        #for (keys %{$f}) {
-        #    print $_ . "\n";
-        #}
         $dbh->do(qq ~INSERT INTO
             equipments (
                 description, equip_id, equip_type, image,
                 is_gift, is_premium, level, name, nation,
-                price, short_name, small_image, type
+                price, short_name, small_image, type,
+                have_goods, delivery_time
             )
             VALUES (
                 "$_->{description}", $_->{plane_id}, "warplanes", "$_->{large_image}",
                 $is_gift, $is_premium, $_->{level}, "$_->{name_i18n}", "$_->{nation}",
-                $_->{price}, "$_->{short_name_i18n}", "$_->{small_image}", "$_->{type}"
+                $_->{price}, "$_->{short_name_i18n}", "$_->{small_image}", "$_->{type}",
+                1, 3
             )~);
         $dbh->do(qq ~INSERT INTO
             warplanes (
@@ -275,6 +276,42 @@ sub Admin {
         )~);
 }
 
+sub Translate {
+    my @translates = (
+        '"tanks", "Танки"',
+        '"light_tanks", "Лёгкие танки"',
+        '"medium_tanks", "Средние танки"',
+        '"heavy_tanks", "Тяжёлые танки"',
+        '"warplanes", "Самолёты"',
+        '"fighter", "Истребители"',
+        '"multirole_fighter", "Многоцелевые истребители"',
+        '"heavy_fighter", "Тяжёлые истребители"',
+        '"aircraft", "Штурмовики"',
+        '"spg", "САУ"',
+        '"at_spg", "ПТ-САУ"',
+        '"low_levels", "Низкого уровня"',
+        '"medium_levels", "Среднего уровня"',
+        '"high_levels", "Высокого уровня"',
+        '"uk", "Великобритания"',
+        '"ussr", "СССР"',
+        '"germany", "Германия"',
+        '"france", "Франция"',
+        '"chine", "Китай"',
+        '"japan", "Япония"',
+        '"usa", "США"',
+        '"czech", "Чехословакия"',
+    );
+    for (@translates) {
+        $dbh->do(qq ~INSERT INTO
+            translates (
+                name, name_i18n
+            )
+            VALUES (
+                $_
+            )~);
+    }
+}
+
 Tanks;
 Warplanes;
 ClosureTable;
@@ -282,3 +319,6 @@ Types;
 Nations;
 Levels;
 Admin;
+Translate;
+#$dbh->do(qq~ UPDATE tanks SET speed_backward=20 WHERE equip_id=52769; ~);
+#$dbh->do(qq ~select table_name from information_schema.tables~);

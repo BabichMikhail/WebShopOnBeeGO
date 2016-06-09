@@ -27,6 +27,10 @@
                 {{end}}
                 {{if .IsAdmin}}
                 <div class="headerBoxRight"><a href="/webshop/admin">Admin</a></div>
+                {{else}}
+                {{if .Authorized}}
+                <div class="headerBoxRight"><a href="/webshop/user">Личный кабинет</a></div>
+                {{end}}
                 {{end}}
             </div>
         </tr>
@@ -47,12 +51,12 @@
                         <div>
                             <label for="Login" class="form-label">Пароль</label>
                             <input class="ui-corner-all ui-state-default" name="Password" type="password"
-                                value="" required pattern="[a-zA-Z0-9]{3,}" title="abc" />
+                                value="" required pattern="[a-zA-Z0-9]{3,}"/>
                         </div>
                         <div>
                             <label for="Login" class="form-label">Пароль повторно</label>
                             <input class="ui-corner-all ui-state-default" name="Repassword" type="password"
-                                value="" required pattern="[a-zA-Z0-9]{3,}" title="abc" />
+                                value="" required pattern="[a-zA-Z0-9]{3,}"/>
                         </div>
                         <div>
                             {{if .Error}}

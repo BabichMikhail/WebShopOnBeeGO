@@ -128,6 +128,10 @@ ul.subCat li:hover > ul {
     /*background-color: #FFBF50;*/
 }
 
+.admingrid thead tr th {
+    border: solid 1px #537DBC;
+}
+
 table.equipment tbody tr td {
     text-align: center;
 }
@@ -326,4 +330,9 @@ table.goodsTable tbody tr td a {
 
 .goodInfoImg {
     width: 50px;
+}
+
+.currentPlace {
+    border-bottom: solid 1px #537DBC;
+    text-align: center;
 }

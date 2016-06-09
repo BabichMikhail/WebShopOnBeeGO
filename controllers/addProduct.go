@@ -3,7 +3,6 @@ package controllers
 import (
     "github.com/astaxie/beego/orm"
     _ "github.com/mattn/go-sqlite3"
-    "fmt"
 )
 
 type AddProductController struct {
@@ -36,7 +35,6 @@ func (c *AddProductController) Get() {
         Sum = orm.ToInt64(S) + orm.ToInt64(Purchases[EquipId]*eq.Price)
         PCount = Count.(int) + 1
     }
-    fmt.Println(Sum, PCount, eq.Price)
     c.SetSession("Sum", Sum)
     c.SetSession("PurchaseCount", PCount)
     c.RedirectOnLastPage()

@@ -17,7 +17,7 @@
             <div class="ui-widget ui-widget-header header">
                 <div class="headerBoxLeft"><a href="/webshop">Магазин виртуальной техники</a></div>
                 <div class="headerEmptyBlock"></div>
-                <div class="headerBoxCenter"><a href="/webshop/purchases">Товар: <span id="purchaseCount">{{.PurchaseCount}}</span>шт. Сумма: <span id="purchaseSum">{{.Sum}}<span></a></div>
+                <div class="headerBoxCenter"><a href="/webshop/purchases">Товар: {{.PurchaseCount}}шт. Сумма: {{.Sum}}</a></div>
                 {{if .Authorized}}
                 <div class="headerBoxRight"><a href="/webshop/logout">Выйти</a></div>
                 <div class="headerBoxRight">{{.Username}}</div>
@@ -27,6 +27,10 @@
                 {{end}}
                 {{if .IsAdmin}}
                 <div class="headerBoxRight"><a href="/webshop/admin">Admin</a></div>
+                {{else}}
+                {{if .Authorized}}
+                <div class="headerBoxRight"><a href="/webshop/user">Личный кабинет</a></div>
+                {{end}}
                 {{end}}
             </div>
         </tr>

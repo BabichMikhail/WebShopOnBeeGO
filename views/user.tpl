@@ -35,44 +35,61 @@
             </div>
         </tr>
         <tr>
-            <td class="catalog" id="catalog">
-            </td>
+            <td class="catalog" id="catalog"></td>
             <td class="grid">
-
                 <table class="equipTable">
                     <thead>
-                        <tr class="currentPlace"><td colspan="6">{{.CurrentPlace}}</td></tr>
                         <tr>
-                            <th class="equipCodeHeader">Код</th>
-                            <th class="equipPhotoHeader">Фото</th>
-                            <th class="equipNameHeader">Наименование товара</th>
-                            <th class="equipNationHeader">Производитель</th>
-                            <th class="equipCostHeader">Цена</th>
-                            <th class="equipEmptyHeader" colspan="2"></th>
+                            <th class="equipCodeHeader">Сумма</th>
+                            <th class="equipPhotoHeader">Количество</th>
+                            <th class="equipNameHeader">Дата</th>
+                            <th class="equipNationHeader">Статус</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {{range .Equipment}}
+                        {{range .UserPurchases}}
                         <tr>
-                            <td class="equipCode">{{.Equip_id}}</td>
-                            <td class="equipPhoto"><img src="{{.Small_image}}"></img></td>
-                            <td class="equipName"><a href="/webshop/goodsinfo/{{.Equip_id}}">{{.Name}}</a></td>
-                            <td class="equipNation">{{.Nation}}</td>
-                            <td class="equipCost">{{.Price}}</td>
-                            {{if .IsCount}}
-                            <td class="equipPlus"><a href="{{urlfor "PurchaseController.Get"}}/change/{{.Equip_id}}/1">
-                                <img src="/static/img/grid/plus.jpg"></img>
-                            </a></td>
-                            <td class="equipMinus"><a href="{{urlfor "PurchaseController.Get"}}/change/{{.Equip_id}}/0">
-                                <img src="/static/img/grid/minus.jpg"></img>
-                            </a></td>
-                            {{else}}
-                            <td class="equipBuy" colspan="2"><a href="/webshop/card/add/{{.Equip_id}}">Купить</a></td>
-                            {{end}}
+                            <td class="equipCode">{{.Sum}}</td>
+                            <td class="equipPhoto">{{.Count}}</td>
+                            <td class="equipName">{{.Date}}</a></td>
+                            <td class="equipNation">{{.Status}}</td>
                         </tr>
                         {{end}}
                     </tbody>
                 </table>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td class="auth">
+                <div class="ui-dialog-content ui-widget-content form-div logForm">
+                    <form class="ui-form ui-widget" method="POST" action='{{urlfor "UserController.Get"}}'>
+                        <div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix ui-draggable-handle">
+                            Изменить пароль
+                        </div>
+                        <div>
+                            <label for="Login" class="form-label">Старый пароль</label>
+                            <input class="ui-corner-all ui-state-default" name="OldPassword" type="password" value=""
+                                required pattern="[a-zA-Z0-9]{3,}" />
+                        </div>
+                        <div>
+                            <label for="Login" class="form-label">Новый пароль</label>
+                            <input class="ui-corner-all ui-state-default" name="Password" type="password"
+                                value="" required pattern="[a-zA-Z0-9]{3,}"/>
+                        </div>
+                        <div>
+                            <label for="Login" class="form-label">Пароль повторно</label>
+                            <input class="ui-corner-all ui-state-default" name="Repassword" type="password"
+                                value="" required pattern="[a-zA-Z0-9]{3,}"/>
+                        </div>
+                        <div>
+                            {{if .Error}}
+                            <div class="ui-state-error ui-state-error-text">{{.Err_msg}}</div>
+                            {{end}}
+                            <input type="submit" value="Изменить пароль"/>
+                        </div>
+                    </form>
+                </div>
             </td>
         </tr>
     </table>

@@ -27,6 +27,10 @@
                 {{end}}
                 {{if .IsAdmin}}
                 <div class="headerBoxRight"><a href="/webshop/admin">Admin</a></div>
+                {{else}}
+                {{if .Authorized}}
+                <div class="headerBoxRight"><a href="/webshop/user">Личный кабинет</a></div>
+                {{end}}
                 {{end}}
             </div>
         </tr>

@@ -20,6 +20,7 @@ func (c *BaseController) SetAuthorized() {
         c.Data["IsAdmin"] = c.GetSession("userright").(int) == 0
     } else {
         c.Data["Authorized"] = false
+        c.Data["IsAdmin"] = false
     }
 }
 

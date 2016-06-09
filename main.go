@@ -4,6 +4,7 @@ import (
     _ "WebShopOnBeeGO/routers"
     "github.com/astaxie/beego"
     "github.com/astaxie/beego/orm"
+    _ "github.com/astaxie/beego/orm"
     _ "github.com/mattn/go-sqlite3"
     "WebShopOnBeeGO/models"
 )
@@ -22,7 +23,8 @@ func init() {
     orm.RegisterModel(new(models.Warplane))
     orm.RegisterModel(new(models.Purchase))
     orm.RegisterModel(new(models.Good))
-    orm.RunSyncdb("default", false, false)
+    orm.RegisterModel(new(models.Translate))
+    orm.RunSyncdb("default", true, true)
 }
 
 func main() {

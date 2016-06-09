@@ -6,6 +6,7 @@ import (
     "github.com/fatih/structs"
     "WebShopOnBeeGO/models"
     "reflect"
+    "strings"
     "strconv"
     "time"
     "fmt"
@@ -29,8 +30,19 @@ func (c *CheckoutController) Get() {
         if c.GetSession("PurchaseCount") != nil {
             count = c.GetSession("PurchaseCount").(int)
         }
-        fmt.Println("Sum =", sum)
-        purchase := models.Purchase{ Sum: sum, Count: count, Date: time.Now()}
+        var userId int
+        if c.GetSession("userId") != nil {
+            userId = c.GetSession("userId").(int)
+        } else {
+            userId = 0
+        }
+        purchase := models.Purchase {
+            Sum: sum,
+            Count: count,
+            Date: time.Now(),
+            Purchaser_id: userId,
+            Status: "Доставляется",
+        }
         o.Begin()
         id, err := o.Insert(&purchase)
         if err == nil {
@@ -38,20 +50,17 @@ func (c *CheckoutController) Get() {
         } else {
             o.Rollback()
         }
-        query := ""
+        var keys []string
         for k := range goods {
-            if query != "" {
-                query += ", "
-            }
-            query += k
+            keys = append(keys, k)
         }
         var Costs []struct{ Equip_id int; Price int; Name string }
-        num, err := o.Raw(fmt.Sprintf(`SELECT e.equip_id, e.name, e.price FROM equipments e WHERE e.equip_id IN (%s)`, query)).QueryRows(&Costs)
-        fmt.Println(num, " ", err)
+        num, err := o.Raw(fmt.Sprintf(`SELECT e.equip_id, e.name, e.price FROM equipments e WHERE e.equip_id IN (%s)`, strings.Join(keys, ","))).QueryRows(&Costs)
+        fmt.Println(num, err)
         for _, value := range Costs {
             fmt.Println(value.Equip_id, id, value.Price)
-            _, err := o.Raw(fmt.Sprintf(`INSERT INTO goods (price, count, equip_id, purchase_id, name) VALUES (%d, %d, %d, %d, "%s")`,
-                value.Price, goods[strconv.Itoa(value.Equip_id)], value.Equip_id, id, value.Name)).Exec();
+            _, err := o.Raw(fmt.Sprintf(`INSERT INTO goods (price, count, equip_id, purchase_id, name, purchaser_id) VALUES (%d, %d, %d, %d, "%s", %d)`,
+                value.Price, goods[strconv.Itoa(value.Equip_id)], value.Equip_id, id, value.Name, userId)).Exec();
             if err != nil {
                 fmt.Println(err)
             }
@@ -75,19 +84,16 @@ func (c *PurchaseController) Post() {
     P := c.GetSession("Purchases")
     if P != nil {
         purchases := P.(map[string]int)
-        query := ""
+        var keys []string
         for k := range purchases {
-            if query != "" {
-                query += ", "
-            }
-            query += k
+            keys = append(keys, k)
         }
         c.SetSession("Purchases", purchases)
         Sum := 0
         PCount := 0
         o := orm.NewOrm()
         var eqs[]struct{Equip_id int; Price int}
-        o.Raw(fmt.Sprintf("SELECT e.equip_id, e.price FROM equipments e WHERE e.equip_id IN (%s)", query)).QueryRows(&eqs)
+        o.Raw(fmt.Sprintf("SELECT e.equip_id, e.price FROM equipments e WHERE e.equip_id IN (%s)", strings.Join(keys, ","))).QueryRows(&eqs)
         for _, value := range eqs {
             Sum += value.Price*purchases[strconv.Itoa(value.Equip_id)]
             PCount += purchases[strconv.Itoa(value.Equip_id)]
@@ -106,19 +112,14 @@ func (c *PurchaseController) Get() {
     P := c.GetSession("Purchases")
     if P != nil {
         purchases := P.(map[string]int)
-        i := 0
-        query := ""
+        var keys []string
         for k := range purchases {
-            if i != 0 {
-                query += " OR "
-            }
-            query += "e.equip_id = " + k
-            i++
+            keys = append(keys, k)
         }
         o := orm.NewOrm()
         var equipments []models.EquipInTable
         o.Raw(fmt.Sprintf(`SELECT e.equip_id, e.name, e.price, e.small_image, n.name_i18n as "nation" FROM equipments e ` +
-            `INNER JOIN nations n ON n.name = e.nation WHERE %s`, query)).QueryRows(&equipments)
+            `INNER JOIN nations n ON n.name = e.nation WHERE e.equip_id IN (%s)`, strings.Join(keys, ","))).QueryRows(&equipments)
         ext_equipments := make([]models.ExtEquipInTable, len(equipments))
         for i, eq := range equipments {
             ext_equipments[i].Equip_id = eq.Equip_id
@@ -148,7 +149,6 @@ func (c *PurchaseController) Change() {
             if purchases[equip_id] == -1 {
                 purchases[equip_id] = 0
             }
-
         }
     } else {
         purchases = map[string]int{}
@@ -175,44 +175,59 @@ func (c *PurchaseController) Delete() {
     c.RedirectOnLastPage()
 }
 
-func TankCharacteristics(EquipId string) (t reflect.Type, names []string, chs map[string]interface{}) {
+func TankCharacteristics(EquipId string, IsAdmin bool) (t reflect.Type, names []string, chs map[string]interface{}) {
     o := orm.NewOrm()
     names = structs.Names(models.TankCharacteristics{})
     t = reflect.TypeOf(models.TankCharacteristics{})
     var ch models.TankCharacteristics
-    o.Raw(fmt.Sprintf(`SELECT e.description, e.is_premium, e.level, e.name, ` +
-        `n.name_i18n as "nation", e.price, e.type, e.weight, e.max_weight, e.armor, e.hp, ` +
-        `e.speed_forward, e.speed_backward FROM tanks e inner join nations n on ` +
-        `e.nation = n.name WHERE e.equip_id = %s`, EquipId)).QueryRow(&ch)
+    if (IsAdmin) {
+        o.Raw(fmt.Sprintf(`SELECT e.description, e.is_premium, e.level, e.name, ` +
+            `e.nation, e.price, e.type, e.weight, e.max_weight, e.armor, e.hp, ` +
+            `e.speed_forward, e.speed_backward FROM tanks e WHERE e.equip_id = %s`, EquipId)).QueryRow(&ch)
+    } else {
+        o.Raw(fmt.Sprintf(`SELECT e.description, e.is_premium, e.level, e.name, ` +
+            `n.name_i18n as "nation", e.price, e.type, e.weight, e.max_weight, e.armor, e.hp, ` +
+            `e.speed_forward, e.speed_backward FROM tanks e inner join nations n on ` +
+            `e.nation = n.name WHERE e.equip_id = %s`, EquipId)).QueryRow(&ch)
+    }
     chs = structs.Map(ch)
     return
 }
 
-func WarplaneCharacteristics(EquipId string) (t reflect.Type, names []string, chs map[string]interface{}) {
+func WarplaneCharacteristics(EquipId string, IsAdmin bool) (t reflect.Type, names []string, chs map[string]interface{}) {
     o := orm.NewOrm()
     names = structs.Names(models.WarplaneCharacteristics{})
     t = reflect.TypeOf(models.WarplaneCharacteristics{})
     var ch models.WarplaneCharacteristics
-    o.Raw(fmt.Sprintf(`SELECT e.description, e.is_premium, e.level, e.name, ` +
-        `n.name_i18n as "nation", e.price, e.type, e.weight, e.hp, e.speed_ground, ` +
-        `e.maneuverability, e.max_speed, e.stall_speed, e.optimal_height, e.roll_maneuver, ` +
-        `e.dive_speed, e.opt_maneuver_speed FROM warplanes e inner join nations n on ` +
-        `e.nation = n.name WHERE e.equip_id = %s`, EquipId)).QueryRow(&ch)
+    if (IsAdmin) {
+        o.Raw(`SELECT e.description, e.is_premium, e.level, e.name, e.nation, ` +
+            `e.price, e.type, e.weight, e.hp, e.speed_ground, e.maneuverability, ` +
+            `e.max_speed, e.stall_speed, e.optimal_height, e.roll_maneuver, ` +
+            `e.dive_speed, e.opt_maneuver_speed, FROM warplanes e WHERE e.equip_id = ?`,
+            EquipId).QueryRow(&ch)
+    } else {
+        o.Raw(`SELECT e.description, e.is_premium, e.level, e.name, ` +
+            `n.name_i18n as "nation", e.price, e.type, e.weight, e.hp, ` +
+            `e.speed_ground, e.maneuverability, e.max_speed, e.stall_speed, ` +
+            `e.optimal_height, e.roll_maneuver, e.dive_speed, e.opt_maneuver_speed, ` +
+            `FROM warplanes e INNER JOIN nations n ON e.nation = n.name WHERE e.equip_id = ?`,
+            EquipId).QueryRow(&ch)
+    }
     chs = structs.Map(ch)
     return
 }
 
-func GetCharacteristics(EquipType string, EquipId string) []struct{Key string; Value string} {
-    t, names, characteristics := func (EquipType string) (reflect.Type, []string, map[string]interface{}) {
+func GetCharacteristics(EquipType string, EquipId string, IsAdmin bool) []struct{Key string; Value string; PropName string; Type string} {
+    t, names, characteristics := func (EquipType string, IsAdmin bool) (reflect.Type, []string, map[string]interface{}) {
         if EquipType == "tanks" {
-            return TankCharacteristics(EquipId)
+            return TankCharacteristics(EquipId, IsAdmin)
         } else if EquipType == "warplanes" {
-            return WarplaneCharacteristics(EquipId)
+            return WarplaneCharacteristics(EquipId, IsAdmin)
         } else {
             return nil, nil, nil
         }
-    }(EquipType)
-    descriptions := make([]struct{Key string; Value string}, len(names))
+    }(EquipType, IsAdmin)
+    descriptions := make([]struct{Key string; Value string; PropName string; Type string}, len(names))
     for _, fieldName := range names {
         field, _ := t.FieldByName(fieldName)
         index, _ := strconv.Atoi(field.Tag.Get("index"))
@@ -220,9 +235,11 @@ func GetCharacteristics(EquipType string, EquipId string) []struct{Key string; V
         var value string
         switch field.Tag.Get("type") {
         case "int":
+            descriptions[index].Type = "int"
             i, _ := characteristics[field.Name].(int)
             value = strconv.Itoa(i)
         case "bool":
+            descriptions[index].Type = "bool"
             b, _ := characteristics[field.Name].(bool)
             if b {
                 value = "Да"
@@ -230,10 +247,13 @@ func GetCharacteristics(EquipType string, EquipId string) []struct{Key string; V
                 value = "Нет"
             }
         case "string":
+            descriptions[index].Type = "string"
             value, _ = characteristics[field.Name].(string)
         }
         descriptions[index].Key = key
         descriptions[index].Value = value
+        descriptions[index].PropName = field.Tag.Get("orm")
+        fmt.Println(field.Tag.Get("orm"))
     }
     return descriptions
 }
@@ -249,9 +269,9 @@ func (c *GoodsInfoController) Get() {
     c.SetPurchases()
     o := orm.NewOrm()
     equip_id := c.Ctx.Input.Param(":equip_id")
-    var equip struct { Equip_type string; Image string }
-    o.Raw(fmt.Sprintf("SELECT e.equip_type, e.image FROM equipments e WHERE e.equip_id = %s", equip_id)).QueryRow(&equip)
-    descriptions := GetCharacteristics(equip.Equip_type, equip_id)
+    var equip struct { Equip_type string; Image string; Have_goods bool; Delivery_time string }
+    o.Raw("SELECT e.equip_type, e.image, e.have_goods, e.delivery_time FROM equipments e WHERE e.equip_id = ?", equip_id).QueryRow(&equip)
+    descriptions := GetCharacteristics(equip.Equip_type, equip_id, c.Data["IsAdmin"].(bool))
     P := c.GetSession("Purchases")
     var purchases map[string]int
     if P != nil {
@@ -260,10 +280,12 @@ func (c *GoodsInfoController) Get() {
         purchases = map[string]int{}
     }
     c.Data["IsCount"] = purchases[equip_id] > 0
-
     c.Data["Description"] = descriptions[0].Value
     c.Data["Characteristics"] = descriptions[1:]
     c.Data["Image"] = equip.Image
-    c.Data["Equip_id"] = equip_id
+    c.Data["EquipId"] = equip_id
+    c.Data["DelivTime"] = equip.Delivery_time
+    c.Data["HaveGoods"] = equip.Have_goods
+    c.Data["TableName"] = equip.Equip_type
     c.TplName = "goodsInfo.tpl"
 }

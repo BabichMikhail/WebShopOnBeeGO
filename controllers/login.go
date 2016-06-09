@@ -42,6 +42,7 @@ func (c *LoginController) Signup() {
     c.SetSession("authorized", true)
     c.SetSession("username", login)
     c.SetSession("userright", 3)
+    c.SetSession("userId", user.Id)
     c.RedirectOnLastPage()
 }
 
@@ -63,6 +64,7 @@ func (c *LoginController) Login() {
     fmt.Println(user.Password, hash, user.Login, err)
     if user.Password == hash {
         c.SetSession("authorized", true)
+        c.SetSession("userId", user.Id)
         c.SetSession("username", login)
         c.SetSession("userright", user.Rights)
         c.RedirectOnLastPage()
@@ -74,5 +76,8 @@ func (c *LoginController) Login() {
 
 func (c *LoginController) Logout() {
     c.SetSession("authorized", false)
+    c.SetSession("userId", nil)
+    c.SetSession("username", nil)
+    c.SetSession("userright", 3)
     c.RedirectOnLastPage()
 }

@@ -27,12 +27,17 @@
                 {{end}}
                 {{if .IsAdmin}}
                 <div class="headerBoxRight"><a href="/webshop/admin">Admin</a></div>
+                {{else}}
+                {{if .Authorized}}
+                <div class="headerBoxRight"><a href="/webshop/user">Личный кабинет</a></div>
+                {{end}}
                 {{end}}
             </div>
         </tr>
         <tr>
             <td class="catalog" id="catalog">
             </td>
+            <form class="ui-form ui-widget" method="POST" action="/webshop/admin/editcard/{{.TableName}}/{{.EquipId}}">
             <td class="goods">
                 <table class="goodsTable">
                     <tbody>
@@ -40,23 +45,30 @@
                             <td class="propImg"><img src="{{.Image}}"></img></td>
                             {{if .IsCount}}
                             <td width="500px"></td>
-                            <td class="equipPlus goodInfoImg"><a href="{{urlfor "PurchaseController.Get"}}/change/{{.Equip_id}}/1">
+                            <td class="equipPlus goodInfoImg"><a href="{{urlfor "PurchaseController.Get"}}/change/{{.EquipId}}/1">
                                 <img src="/static/img/grid/plus.jpg"></img>
                             </a></td>
-                            <td class="equipMinus goodInfoImg"><a href="{{urlfor "PurchaseController.Get"}}/change/{{.Equip_id}}/0">
+                            <td class="equipMinus goodInfoImg"><a href="{{urlfor "PurchaseController.Get"}}/change/{{.EquipId}}/0">
                                 <img src="/static/img/grid/minus.jpg"></img>
                             </a></td>
                             <td></td>
                             {{else}}
                             <td colspan="3"></td>
-                            <td class="equipBuy"><a href="/webshop/card/add/{{.Equip_id}}">Купить</a></td>
+                            <td class="equipBuy"><a href="/webshop/card/add/{{.EquipId}}">Купить</a></td>
                             {{end}}
                         </tr>
+                        {{$isAdmin := .IsAdmin}}
                         <tr>
                             <td class="characteristics descrTitle" colspan="5">Описание</td>
                         </tr>
                         <tr>
-                            <td class="descr" colspan="5">{{.Description}}</td>
+                            <td class="descr" colspan="5">
+                                {{if $isAdmin}}
+                                <textarea rows="10" cols="100" name="description">{{.Description}}</textarea>
+                                {{else}}
+                                {{.Description}}
+                                {{end}}
+                            </td>
                         </tr>
                         <tr><td class="afterLastProp" colspan="5"></td></tr>
                         <tr>
@@ -65,14 +77,26 @@
                         {{range .Characteristics}}
                         <tr>
                             <td class="propName">{{.Key}}</td>
+                            {{if $isAdmin}}
+                            <td class="propValue"><input name="{{.PropName}}" value="{{.Value}}"></td>
+                            {{else}}
                             <td class="propValue">{{.Value}}</td>
+                            {{end}}
                             <td colspan="3"></td>
                         </tr>
                         {{end}}
                         <tr><td class="afterLastProp" colspan="5"></td></tr>
+                        <tr>
+                            <td>
+                                {{if $isAdmin}}
+                                    <input type="submit" value="Сохранить"/>
+                                {{end}}
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </td>
+            </form>
         </tr>
     </table>
     <script type="text/javascript">
