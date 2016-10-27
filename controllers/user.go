@@ -3,7 +3,7 @@ package controllers
 import (
     "github.com/astaxie/beego/orm"
     _ "github.com/mattn/go-sqlite3"
-    "WebShopOnBeeGO/models"
+    "github.com/BabichMikhail/WebShopOnBeeGO/models"
     "crypto/sha1"
     "fmt"
 )

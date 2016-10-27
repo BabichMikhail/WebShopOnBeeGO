@@ -1,7 +1,7 @@
 package routers
 
 import (
-    ctls "WebShopOnBeeGO/controllers"
+    ctls "github.com/BabichMikhail/WebShopOnBeeGO/controllers"
     "github.com/astaxie/beego"
 )
 

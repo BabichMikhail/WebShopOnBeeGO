@@ -4,7 +4,7 @@ import (
     "github.com/astaxie/beego"
     "github.com/astaxie/beego/orm"
     _ "github.com/mattn/go-sqlite3"
-    "WebShopOnBeeGO/models"
+    "github.com/BabichMikhail/WebShopOnBeeGO/models"
     "strings"
     "strconv"
     "fmt"

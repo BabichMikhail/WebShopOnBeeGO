@@ -2,7 +2,7 @@ package controllers
 
 import (
     "github.com/astaxie/beego/orm"
-    "WebShopOnBeeGO/models"
+    "github.com/BabichMikhail/WebShopOnBeeGO/models"
     "github.com/fatih/structs"
     "crypto/sha1"
     "strings"

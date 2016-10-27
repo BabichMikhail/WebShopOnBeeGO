@@ -1,12 +1,12 @@
 package main
 
 import (
-    _ "WebShopOnBeeGO/routers"
+    _ "github.com/BabichMikhail/WebShopOnBeeGO/routers"
     "github.com/astaxie/beego"
     "github.com/astaxie/beego/orm"
     _ "github.com/astaxie/beego/orm"
     _ "github.com/mattn/go-sqlite3"
-    "WebShopOnBeeGO/models"
+    "github.com/BabichMikhail/WebShopOnBeeGO/models"
 )
 
 func init() {

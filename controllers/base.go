@@ -2,7 +2,7 @@ package controllers
 
 import (
     "github.com/astaxie/beego"
-    "WebShopOnBeeGO/catalogs"
+    "github.com/BabichMikhail/WebShopOnBeeGO/catalogs"
     "github.com/astaxie/beego/orm"
     "strconv"
     "fmt"
